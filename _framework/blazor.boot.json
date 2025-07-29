@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "TournamentWebTest",
   "resources": {
-    "hash": "sha256-v1v7EzsZaGsD6UwDadhitJh9TOnYr6pbdUPeVVXsgwY=",
+    "hash": "sha256-6IG4yVNFNZqed5UFJic9EeONNcIcCMrEcYtWADMEqqQ=",
     "fingerprinting": {
       "Microsoft.AspNetCore.Components.v1g891vwm1.wasm": "Microsoft.AspNetCore.Components.wasm",
       "Microsoft.AspNetCore.Components.Web.51hfyqsdyg.wasm": "Microsoft.AspNetCore.Components.Web.wasm",
@@ -76,8 +76,8 @@
       "System.Xml.Linq.9s8atxe8u2.wasm": "System.Xml.Linq.wasm",
       "System.Xml.ReaderWriter.pyrxayosfq.wasm": "System.Xml.ReaderWriter.wasm",
       "System.Xml.XDocument.2zthwj8j9g.wasm": "System.Xml.XDocument.wasm",
-      "TournamentLibrary.ufvi1tbvx9.wasm": "TournamentLibrary.wasm",
-      "TournamentWebTest.spwdgy6dtv.wasm": "TournamentWebTest.wasm",
+      "TournamentLibrary.5050kppqh1.wasm": "TournamentLibrary.wasm",
+      "TournamentWebTest.k10kqei00b.wasm": "TournamentWebTest.wasm",
       "MigraDoc.DocumentObjectModel.netstandard.resources.subyldwkzv.wasm": "MigraDoc.DocumentObjectModel.netstandard.resources.wasm",
       "MigraDoc.Rendering.netstandard.resources.8t8ryy360a.wasm": "MigraDoc.Rendering.netstandard.resources.wasm",
       "PdfSharp.Charting.netstandard.resources.oufwc7zdlx.wasm": "PdfSharp.Charting.netstandard.resources.wasm",
@@ -179,8 +179,8 @@
       "System.Xml.Linq.9s8atxe8u2.wasm": "sha256-B3Sn5WuDQKyX1cBKZwM/t4NNOIT2E8PtPWVPp/EINqE=",
       "System.Xml.ReaderWriter.pyrxayosfq.wasm": "sha256-L2KexQlAVkenXMtnqg4740hZNvARG9X+IbvYUELwDB4=",
       "System.Xml.XDocument.2zthwj8j9g.wasm": "sha256-/j2bxCGujwFZoav+qfLhqiKV/cxU2OzPXOehq/vdoB4=",
-      "TournamentLibrary.ufvi1tbvx9.wasm": "sha256-VuuP8NX0/7Gy0W14poYVUoZWqspm/NoDRq8jRtCBnNE=",
-      "TournamentWebTest.spwdgy6dtv.wasm": "sha256-4F5KhUWssPRO3WeZn/HmFKaSoQqScxnNmqiUk3hI/I8="
+      "TournamentLibrary.5050kppqh1.wasm": "sha256-VcEapVoEUcB4izLICpo30luq7QUEY7jDv7MD3dhI+Co=",
+      "TournamentWebTest.k10kqei00b.wasm": "sha256-yFBXzvy53s+rxRahINYm4VJamEhWwhHxbzKNc8Ebb5E="
     },
     "satelliteResources": {
       "de": {
