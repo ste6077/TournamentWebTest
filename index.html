@@ -5,6 +5,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TournamentWebTest</title>
+    <base href="/" id="dynamic-base">
+    <script>
+        // Wenn unter GitHub Pages, setze dynamisch den base href
+        if (location.hostname === "ste6077.github.io") {
+            document.getElementById("dynamic-base").setAttribute("href", "/TournamentWebTest/");
+        }
+    </script>
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />

@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "TournamentWebTest",
   "resources": {
-    "hash": "sha256-E+Tf4BegV8i34Wc3vsv13J63psCZidF9SzKERAMQ32c=",
+    "hash": "sha256-v1v7EzsZaGsD6UwDadhitJh9TOnYr6pbdUPeVVXsgwY=",
     "fingerprinting": {
       "Microsoft.AspNetCore.Components.v1g891vwm1.wasm": "Microsoft.AspNetCore.Components.wasm",
       "Microsoft.AspNetCore.Components.Web.51hfyqsdyg.wasm": "Microsoft.AspNetCore.Components.Web.wasm",
@@ -30,7 +30,7 @@
       "System.Collections.Immutable.yzetoftq70.wasm": "System.Collections.Immutable.wasm",
       "System.Collections.NonGeneric.d5rfgctssc.wasm": "System.Collections.NonGeneric.wasm",
       "System.Collections.Specialized.qj6v7rwq0m.wasm": "System.Collections.Specialized.wasm",
-      "System.Collections.wl65b6sbyu.wasm": "System.Collections.wasm",
+      "System.Collections.th12umm8b8.wasm": "System.Collections.wasm",
       "System.ComponentModel.Primitives.897ogqvvr5.wasm": "System.ComponentModel.Primitives.wasm",
       "System.ComponentModel.TypeConverter.g8uwu9yry6.wasm": "System.ComponentModel.TypeConverter.wasm",
       "System.ComponentModel.pmcwt06fg1.wasm": "System.ComponentModel.wasm",
@@ -76,8 +76,8 @@
       "System.Xml.Linq.9s8atxe8u2.wasm": "System.Xml.Linq.wasm",
       "System.Xml.ReaderWriter.pyrxayosfq.wasm": "System.Xml.ReaderWriter.wasm",
       "System.Xml.XDocument.2zthwj8j9g.wasm": "System.Xml.XDocument.wasm",
-      "TournamentLibrary.26xdi4ob7u.wasm": "TournamentLibrary.wasm",
-      "TournamentWebTest.zsqbsarcz7.wasm": "TournamentWebTest.wasm",
+      "TournamentLibrary.ufvi1tbvx9.wasm": "TournamentLibrary.wasm",
+      "TournamentWebTest.spwdgy6dtv.wasm": "TournamentWebTest.wasm",
       "MigraDoc.DocumentObjectModel.netstandard.resources.subyldwkzv.wasm": "MigraDoc.DocumentObjectModel.netstandard.resources.wasm",
       "MigraDoc.Rendering.netstandard.resources.8t8ryy360a.wasm": "MigraDoc.Rendering.netstandard.resources.wasm",
       "PdfSharp.Charting.netstandard.resources.oufwc7zdlx.wasm": "PdfSharp.Charting.netstandard.resources.wasm",
@@ -135,7 +135,7 @@
       "System.Collections.Immutable.yzetoftq70.wasm": "sha256-LvXpAjcencMZKVPnt8w3oNwM0YYWef3ypgIjrgK3Fq8=",
       "System.Collections.NonGeneric.d5rfgctssc.wasm": "sha256-zzjrLz53G1v7XePcA+BTODsJ3DSYziskCjZYo/ozsiE=",
       "System.Collections.Specialized.qj6v7rwq0m.wasm": "sha256-Gpra8AvzYr3UkytNlejZ41Plbt0p11qRG6ptjecz3gY=",
-      "System.Collections.wl65b6sbyu.wasm": "sha256-TAzWbd1WnQyTHM4xe0n3zCz6vsHaKAJhS3sFu9/MHZ0=",
+      "System.Collections.th12umm8b8.wasm": "sha256-Ecr0sXKSNUdhpO+G4xeseymJtnYON3awYgSNQG+MH5w=",
       "System.ComponentModel.Primitives.897ogqvvr5.wasm": "sha256-vKI7EsofqXc4bAur2KHrjHF42oiapmfW0yWTdKSVa+g=",
       "System.ComponentModel.TypeConverter.g8uwu9yry6.wasm": "sha256-8By903sg6hHMWFeZHh0/GNXJ2xzUvjdoTVZLqdsEZ8c=",
       "System.ComponentModel.pmcwt06fg1.wasm": "sha256-8WQCvrkaFOt2Lb5AF7ubWgfLFfeAmgddjXtpUc/kXnM=",
@@ -179,8 +179,8 @@
       "System.Xml.Linq.9s8atxe8u2.wasm": "sha256-B3Sn5WuDQKyX1cBKZwM/t4NNOIT2E8PtPWVPp/EINqE=",
       "System.Xml.ReaderWriter.pyrxayosfq.wasm": "sha256-L2KexQlAVkenXMtnqg4740hZNvARG9X+IbvYUELwDB4=",
       "System.Xml.XDocument.2zthwj8j9g.wasm": "sha256-/j2bxCGujwFZoav+qfLhqiKV/cxU2OzPXOehq/vdoB4=",
-      "TournamentLibrary.26xdi4ob7u.wasm": "sha256-1vRYfIvRIU/bJoNdX6Ojjl0FM+7VxsRLhC653gOeBQE=",
-      "TournamentWebTest.zsqbsarcz7.wasm": "sha256-cxDxf437MqdkNEm1Jftj3nfcLkKaXFT/5kZPVe+gTrA="
+      "TournamentLibrary.ufvi1tbvx9.wasm": "sha256-VuuP8NX0/7Gy0W14poYVUoZWqspm/NoDRq8jRtCBnNE=",
+      "TournamentWebTest.spwdgy6dtv.wasm": "sha256-4F5KhUWssPRO3WeZn/HmFKaSoQqScxnNmqiUk3hI/I8="
     },
     "satelliteResources": {
       "de": {
