@@ -1,0 +1,82 @@
+﻿@page "/tournamenttest"
+@using System.Text.Json
+@inject IJSRuntime JS
+
+<h3>Turnier Test</h3>
+
+<div class="mb-3">
+    <input type="file" @onchange="LoadFile" />
+    <button class="btn btn-success ms-2" @onclick="SaveToFile">Datei speichern</button>
+</div>
+
+@if (Schedule.Count > 0)
+{
+    <table class="table table-bordered table-sm mt-3">
+        <thead class="table-light">
+            <tr>
+                <th>Uhrzeit</th>
+                <th>Ablauf Nr.</th>
+                <th>Spiel Nr.</th>
+                <th>Gruppe</th>
+                <th>Name A</th>
+                <th>Name B</th>
+                <th>Score A</th>
+                <th>Score B</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var match in Schedule)
+            {
+                <tr>
+                    <td>@match.Time.ToString("HH:mm")</td>
+                    <td>@match.Sequence</td>
+                    <td>@match.GameNumber</td>
+                    <td>@match.Group</td>
+                    <td>@match.TeamA</td>
+                    <td>@match.TeamB</td>
+                    <td>@match.ScoreA</td>
+                    <td>@match.ScoreB</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    public class Match
+    {
+        public DateTime Time { get; set; } = DateTime.Now;
+        public int Sequence { get; set; }
+        public int GameNumber { get; set; }
+        public string Group { get; set; } = "";
+        public string TeamA { get; set; } = "";
+        public string TeamB { get; set; } = "";
+        public int ScoreA { get; set; }
+        public int ScoreB { get; set; }
+    }
+
+    private List<Match> Schedule = new();
+
+    private async Task LoadFile(ChangeEventArgs e)
+    {
+        var files = (e.Value as Microsoft.AspNetCore.Components.Forms.IBrowserFile[]
+                     ?? new[] { (Microsoft.AspNetCore.Components.Forms.IBrowserFile)e.Value }).Where(f => f != null);
+        var file = files.FirstOrDefault();
+        if (file != null)
+        {
+            using var stream = file.OpenReadStream();
+            using var reader = new StreamReader(stream);
+            var json = await reader.ReadToEndAsync();
+            var loaded = JsonSerializer.Deserialize<List<Match>>(json);
+            if (loaded != null)
+                Schedule = loaded;
+        }
+    }
+
+    private async Task SaveToFile()
+    {
+        var json = JsonSerializer.Serialize(Schedule);
+        var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+        await JS.InvokeVoidAsync("downloadFile", "spielplan.json", Convert.ToBase64String(bytes));
+    }
+}

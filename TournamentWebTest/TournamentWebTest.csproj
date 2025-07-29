@@ -7,8 +7,53 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\Data\Teams\1. FC Heidenheim.team" />
+    <None Include="wwwroot\Data\Teams\1. FC Kaiserslautern.team" />
+    <None Include="wwwroot\Data\Teams\1. FC Köln.team" />
+    <None Include="wwwroot\Data\Teams\1. FC Nürnberg.team" />
+    <None Include="wwwroot\Data\Teams\1. FSV Mainz 05.team" />
+    <None Include="wwwroot\Data\Teams\BAUSCH+STRÖBEL.team" />
+    <None Include="wwwroot\Data\Teams\Bayer 04 Leverkusen.team" />
+    <None Include="wwwroot\Data\Teams\Borussia Dortmund.team" />
+    <None Include="wwwroot\Data\Teams\Borussia M%27Gladbach.team" />
+    <None Include="wwwroot\Data\Teams\Eintracht Frankfurt.team" />
+    <None Include="wwwroot\Data\Teams\Envases.team" />
+    <None Include="wwwroot\Data\Teams\FC Basel.team" />
+    <None Include="wwwroot\Data\Teams\FC Bayern München.team" />
+    <None Include="wwwroot\Data\Teams\FC Ingolstadt 04.team" />
+    <None Include="wwwroot\Data\Teams\FC Schalke 04.team" />
+    <None Include="wwwroot\Data\Teams\FSV Hollenbach.team" />
+    <None Include="wwwroot\Data\Teams\GEMÜ.team" />
+    <None Include="wwwroot\Data\Teams\Hamburger SV.team" />
+    <None Include="wwwroot\Data\Teams\Hertha BSC Berlin.team" />
+    <None Include="wwwroot\Data\Teams\Kratschmayer.team" />
+    <None Include="wwwroot\Data\Teams\Manchester City FC.team" />
+    <None Include="wwwroot\Data\Teams\R. Stahl AG.team" />
+    <None Include="wwwroot\Data\Teams\RB Leipzig.team" />
+    <None Include="wwwroot\Data\Teams\Red Bull Akademie.team" />
+    <None Include="wwwroot\Data\Teams\Schalke.team" />
+    <None Include="wwwroot\Data\Teams\Schubert.team" />
+    <None Include="wwwroot\Data\Teams\Sport Lisboa e Benfica.team" />
+    <None Include="wwwroot\Data\Teams\SSV Ulm 1846.team" />
+    <None Include="wwwroot\Data\Teams\SV Stuttgarter Kickers.team" />
+    <None Include="wwwroot\Data\Teams\SWG Schraubenwerk Gaisbach.team" />
+    <None Include="wwwroot\Data\Teams\TSG 1899 Hoffenheim.team" />
+    <None Include="wwwroot\Data\Teams\TSV Ilshofen.team" />
+    <None Include="wwwroot\Data\Teams\VfB Stuttgart.team" />
+    <None Include="wwwroot\Data\Teams\VfL Wolfsburg.team" />
+    <None Include="wwwroot\Data\Teams\Würth Elektronik.team" />
+    <None Include="wwwroot\Data\Teams\Würth IT.team" />
+    <None Include="wwwroot\Data\Teams\ZIEHL-ABEGG.team" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.5" PrivateAssets="all" />
+    <PackageReference Include="TournamentLibrary" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\TournamentLibrary\TournamentLibrary\TournamentLibrary.csproj" />
   </ItemGroup>
 
 </Project>

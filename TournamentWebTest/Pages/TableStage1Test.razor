@@ -1,0 +1,235 @@
+﻿@page "/tablestage1test"
+@using System.ComponentModel.DataAnnotations;
+@using TournamentLibrary.Goals
+@using TournamentWebTest.Services
+@using TournamentLibrary.Matches;
+@using TournamentLibrary.Teams;
+@inject TableTestService TestService
+
+
+<h5>Spielplan</h5>
+
+<table class="table table-bordered table-sm">
+    <thead class="table-light">
+        <tr>
+            <th>Nr</th>
+            <th>Gruppe</th>
+            <th>Name A</th>
+            <th>Name B</th>
+            <th>Score A</th>
+            <th>Score B</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var match in Schedule)
+        {
+            <tr>
+                <td>@match.GameNumber</td>
+                <td>@match.Group</td>
+                <td style="background-color:@TeamColors.GetValueOrDefault(match.TeamA, "white")">
+                    @match.NameTeamA
+                </td>
+                <td style="background-color:@TeamColors.GetValueOrDefault(match.TeamB, "white")">
+                    @match.NameTeamB
+                </td>
+                <td>
+                    <input type="number" class="form-control form-control-sm" style="width: 60px;" min="0" value="@match.ScoreA.ToString()" @oninput="(e) => OnScoreChanged(e, match, true)" />
+                </td>
+                <td>
+                    <input type="number" class="form-control form-control-sm" style="width: 60px;" min="0" value="@match.ScoreB.ToString()" @oninput="(e) => OnScoreChanged(e, match, false)" />
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Update -->
+<div class="my-3">
+    <button class="btn btn-lg" style="background-color: red; color: white;" @onclick="ResetScores">
+        Reset Scores
+    </button>
+</div>
+
+<!-- Gruppentabelle -->
+<h5 class="mt-4">Gruppentabelle</h5>
+<table class="table table-bordered table-sm">
+    <thead class="table-light">
+        <tr>
+            <th>Team</th>
+            <th>Spiele</th>
+            <th>Siege</th>
+            <th>Draw</th>
+            <th>Loss</th>
+            <th>Tore+</th>
+            <th>Tore–</th>
+            <th>Diff</th>
+            <th>Punkte</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entry in GroupTable)
+        {
+            <tr>
+                <td style="background-color:@TeamColors.GetValueOrDefault(entry.Team, "white")">
+                    @entry.Name
+                </td>
+                <td>@entry.Played</td>
+                <td>@entry.Wins</td>
+                <td>@entry.Draws</td>
+                <td>@entry.Losses</td>
+                <td>@entry.GoalsFor</td>
+                <td>@entry.GoalsAgainst</td>
+                <td>@(entry.GoalsFor - entry.GoalsAgainst)</td>
+                <td>@entry.Points</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+    public class MatchEntry
+    {
+        public DateTime Time { get; set; } = DateTime.Now;
+        public int Sequence { get; set; }
+        public int GameNumber { get; set; }
+        public string Group { get; set; } = "";
+        public string NameTeamA { get; set; } = "";
+        public string NameTeamB { get; set; } = "";
+        public int ScoreA { get; set; }
+        public int ScoreB { get; set; }
+        public Team? TeamA { get; set; }
+        public Team? TeamB { get; set; }
+        public Match MatchLink { get; set; }
+
+        public MatchEntry() { }
+        public MatchEntry(TournamentLibrary.Matches.Match match)
+        {
+            Group = match.Group.Name;
+            TeamA = match.TeamA;
+            TeamB = match.TeamB;
+            NameTeamA = match.TeamA.Name;
+            NameTeamB = match.TeamB.Name;
+            MatchLink = match;
+        }
+    }
+
+    public class TableEntry
+    {
+        public string Name { get; set; } = "";
+        public int Played { get; set; }
+        public int Wins { get; set; }
+        public int Draws { get; set; }
+        public int Losses { get; set; }
+        public int GoalsFor { get; set; }
+        public int GoalsAgainst { get; set; }
+        public int Points => Wins * 3 + Draws;
+        public Team? Team { get; set; }
+    }
+
+    // Beispielhafte Daten
+    private List<MatchEntry> Schedule = new();
+
+    private List<TableEntry> GroupTable = new();
+
+    private bool _internalProgress = false;
+
+    private Dictionary<Team, string> TeamColors = new Dictionary<Team, string>();
+    private string[] AvailableColors = new[] { "#FFD700", "#ADD8E6", "#90EE90", "#FFA07A", "#DDA0DD" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Async Initialisierung, z. B. Daten laden
+        _internalProgress = true;
+        Schedule = InitializeSchedule();
+        UpdateGroupTable();
+
+        for (int i = 0; i < TestService.Tournament.Teams.Count; i++)
+        {
+            TeamColors.Add(TestService.Tournament.Teams[i], AvailableColors[i]);
+        }
+
+        _internalProgress = false;
+    }
+
+
+
+    private void OnScoreChanged(ChangeEventArgs e, MatchEntry match, bool isTeamA)
+    {
+        if (_internalProgress)
+            return; // Verhindert rekursive Aufrufe
+
+        if (int.TryParse(e.Value?.ToString(), out int newValue) && newValue >= 0)
+        {
+            if (isTeamA)
+                match.ScoreA = newValue;
+            else
+                match.ScoreB = newValue;
+
+            match.MatchLink.GoalsTeamA.Clear();
+            match.MatchLink.GoalsTeamB.Clear();
+
+            for (int i = 0; i < match.ScoreA; i++)
+                match.MatchLink.GoalsTeamA.Add(new Goal() { ParentMatch = match.MatchLink });
+
+            for (int i = 0; i < match.ScoreB; i++)
+                match.MatchLink.GoalsTeamB.Add(new Goal() { ParentMatch = match.MatchLink });
+
+            UpdateGroupTable();
+        }
+    }
+
+    private void ResetScores()
+    {
+        foreach (var m in Schedule)
+        {
+            m.MatchLink.GoalsTeamA.Clear();
+            m.MatchLink.GoalsTeamB.Clear();
+
+            m.ScoreA = 0;
+            m.ScoreB = 0;
+        }
+
+        UpdateGroupTable();
+    }
+
+    private void UpdateGroupTable()
+    {
+        // Optional: Tabelle neu berechnen
+        GroupTable.Clear();
+
+        foreach(var p in TestService.TestGroupStage1.GetTable())
+        {
+            GroupTable.Add(new TableEntry
+            {
+                Name = p.Team.Name,
+                Team = p.Team,
+                Played = p.Statistics.Games,
+                Wins = p.Statistics.Win,
+                Draws = p.Statistics.Draw,
+                Losses = p.Statistics.Loss,
+                GoalsFor = p.Statistics.GoalsFor,
+                GoalsAgainst = p.Statistics.GoalsAgainst
+            });
+        }
+    }
+
+    private List<MatchEntry> InitializeSchedule()
+    {
+
+        // Hier könntest du die Logik zum Initialisieren des Spielplans einfügen
+        var list = new List<MatchEntry>();
+
+        foreach (var match in TestService.Tournament.Fixtures.GetGroupStageMatches(TestService.Tournament.GroupStage1))
+        {
+            list.Add(new MatchEntry(match)
+                {
+                    GameNumber = match.OverallMatchNumber,
+                    ScoreA = (int)match.ScoreA,
+                    ScoreB = (int)match.ScoreB
+                });
+        }
+
+        return list;
+    }
+}

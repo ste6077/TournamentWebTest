@@ -5,7 +5,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TournamentWebTest</title>
-    <base href="/" />
+    <base href="/" id="dynamic-base">
+    <script>
+        // Wenn unter GitHub Pages, setze dynamisch den base href
+        if (location.hostname === "ste6077.github.io") {
+            document.getElementById("dynamic-base").setAttribute("href", "/TournamentWebTest/");
+        }
+    </script>
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
@@ -27,6 +33,17 @@
         <span class="dismiss">🗙</span>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+
+    <script>
+        window.downloadFile = (filename, base64) => {
+            const link = document.createElement("a");
+            link.download = filename;
+            link.href = "data:application/json;base64," + base64;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+    </script>
 </body>
 
 </html>

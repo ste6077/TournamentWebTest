@@ -1,0 +1,132 @@
+﻿@page "/tournamentcreator"
+@using System.ComponentModel.DataAnnotations
+@using TournamentWebTest.Services
+@inject TeamService TeamService
+
+<h3>Tournament Creator</h3>
+
+<div class="d-flex justify-content-between mt-4">
+
+    <!-- Linke Liste (verfügbare Teams mit Checkboxen) -->
+    <div class="w-45">
+        <h5>Verfügbare Teams</h5>
+        @foreach (var team in AvailableTeams)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" @bind="team.IsSelected" />
+                <label class="form-check-label">@team.Name</label>
+            </div>
+        }
+    </div>
+
+    <!-- Buttons zwischen den Listen -->
+    <div class="d-flex flex-column justify-content-center align-items-center">
+        <button class="btn btn-primary mb-2" @onclick="MoveRight">→</button>
+        <button class="btn btn-secondary" @onclick="MoveLeft">←</button>
+    </div>
+
+    <!-- Rechte Liste (Turnier-Teams mit Checkboxen und Dropdowns) -->
+    <div class="w-50">
+        <h5>Turnier-Teams</h5>
+        <table class="table table-bordered table-sm">
+            <thead class="table-light">
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Gruppe</th>
+                    <th>Slot</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var team in TournamentTeams)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="form-check-input" @bind="team.IsSelected" />
+                        </td>
+                        <td>@team.Name</td>
+                        <td>
+                            <select class="form-select form-select-sm w-auto" @bind="team.Group">
+                                @foreach (var group in GroupOptions)
+                                {
+                                    <option value="@group">@group</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-select form-select-sm w-auto" @bind="team.Slot">
+                                @foreach (var slot in SlotOptions)
+                                {
+                                    <option value="@slot">@slot</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+@code {
+    public class TeamModel
+    {
+        public string Name { get; set; } = "";
+        public bool IsSelected { get; set; }
+    }
+
+    public class TournamentTeam
+    {
+        public string Name { get; set; } = "";
+        public string Group { get; set; } = "A";
+        public int Slot { get; set; } = 1;
+        public bool IsSelected { get; set; }
+    }
+
+    private List<TeamModel> AvailableTeams = new();
+
+    private List<TournamentTeam> TournamentTeams = new();
+
+    private string[] GroupOptions = new[] { "A", "B", "C" };
+    private int[] SlotOptions = Enumerable.Range(1, 5).ToArray();
+
+    private void MoveRight()
+    {
+        var selected = AvailableTeams.Where(t => t.IsSelected).ToList();
+        foreach (var team in selected)
+        {
+            TournamentTeams.Add(new TournamentTeam
+            {
+                Name = team.Name,
+                Group = "A",
+                Slot = TournamentTeams.Count + 1
+            });
+        }
+        AvailableTeams.RemoveAll(t => t.IsSelected);
+    }
+
+    private void MoveLeft()
+    {
+        var selected = TournamentTeams.Where(t => t.IsSelected).ToList();
+        foreach (var team in selected)
+        {
+            AvailableTeams.Add(new TeamModel { Name = team.Name });
+        }
+        TournamentTeams.RemoveAll(t => t.IsSelected);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //await TeamService.LoadTeamsAsync();
+
+        foreach(var team in TeamService.Teams)
+        {
+            AvailableTeams.Add(new TeamModel
+            {
+                Name = team.Name,
+                IsSelected = false
+            });
+        }
+    }
+}
