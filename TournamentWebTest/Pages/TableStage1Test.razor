@@ -55,6 +55,7 @@
 <table class="table table-bordered table-sm">
     <thead class="table-light">
         <tr>
+            <th>Platz</th>
             <th>Team</th>
             <th>Spiele</th>
             <th>Siege</th>
@@ -70,6 +71,7 @@
         @foreach (var entry in GroupTable)
         {
             <tr>
+                <td>@entry.Place</td>
                 <td style="background-color:@TeamColors.GetValueOrDefault(entry.Team, "white")">
                     @entry.Name
                 </td>
@@ -116,6 +118,7 @@
 
     public class TableEntry
     {
+        public int Place {get;set;} = 5;
         public string Name { get; set; } = "";
         public int Played { get; set; }
         public int Wins { get; set; }
@@ -202,6 +205,7 @@
         {
             GroupTable.Add(new TableEntry
             {
+                Place = (int)p.Place,
                 Name = p.Team.Name,
                 Team = p.Team,
                 Played = p.Statistics.Games,

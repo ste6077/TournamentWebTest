@@ -30,7 +30,7 @@ namespace TournamentWebTest.Services
             {
                 new Team("Borussia Dortmund"),
                 new Team("VfB Stuttgart"),
-                new Team("FC St. Pauli"),
+                new Team("Manchester City"),
                 new Team("1. FC Köln"),
                 new Team("FC Bayern München"),
             };
