@@ -24,7 +24,10 @@ namespace TournamentWebTest.Services
             _navigationManager = navigationManager;
 
             Tournament = new Tournament(new object()) { Autosave = false };
-            
+            TournamentLibrary.Timers.Timer timer = new TournamentLibrary.Timers.Timer();
+            timer.SetTime(new TimeSpan(0, 10, 0)); // 10 minutes
+            timer.Tick += Timer_Tick;
+            timer.Start();
 
             var teams = new List<Team>
             {
@@ -44,6 +47,13 @@ namespace TournamentWebTest.Services
             teams.RemoveAt(0);
             teams.RemoveAt(0);
             InitStage2(teams);
+        }
+
+        public string CurrentTime { get; set; } = "unknown";
+
+        private void Timer_Tick(object? sender, TimeSpan e)
+        {
+            CurrentTime = e.ToString(@"hh\:mm\:ss");
         }
 
         private void InitStage1(List<Team> teams)
