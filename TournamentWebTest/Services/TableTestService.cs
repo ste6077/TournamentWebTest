@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using TournamentLibrary;
 using TournamentLibrary.Groups;
-using TournamentLibrary.Groupstage;
+using TournamentLibrary.GroupStages;
 using TournamentLibrary.Matches;
-using TournamentLibrary.Stages;
 using TournamentLibrary.Teams;
 
 namespace TournamentWebTest.Services
@@ -61,7 +60,7 @@ namespace TournamentWebTest.Services
         {
             Tournament.GroupStage1 = new GroupStage("Stage 1", TournamentLibrary.Types.RoundType.GroupStage1)
             {
-                Settings = new TournamentLibrary.Groupstage.Settings { AmountGroups = 1, GroupSize = 5 }
+                Settings = new TournamentLibrary.GroupStages.GroupStageSettings { AmountGroups = 1, GroupSize = 5 }
             };
             TestGroupStage1 = new GroupNew("Test Group Stage 1", Tournament.GroupStage1, new TeamList(teams));
             Tournament.GroupStage1.AddGroup(TestGroupStage1);
@@ -90,7 +89,7 @@ namespace TournamentWebTest.Services
         {
             Tournament.GroupStage2 = new GroupStage("Stage 2", TournamentLibrary.Types.RoundType.GroupStage2)
             {
-                Settings = new TournamentLibrary.Groupstage.Settings { AmountGroups = 1, GroupSize = 3 }
+                Settings = new TournamentLibrary.GroupStages.GroupStageSettings { AmountGroups = 1, GroupSize = 3 }
             };
             TestGroupStage2 = new GroupNew("Test Group Stage 2", Tournament.GroupStage2, new TeamList(teams));
             Tournament.GroupStage2.AddGroup(TestGroupStage2);
