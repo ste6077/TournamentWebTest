@@ -14,8 +14,8 @@ namespace TournamentWebTest.Services
 
         public bool IsLoaded { get; private set; } = false;
 
-        public GroupNew TestGroupStage1 { get; private set; }
-        public GroupNew TestGroupStage2 { get; private set; }
+        public Group TestGroupStage1 { get; private set; }
+        public Group TestGroupStage2 { get; private set; }
         public TournamentLibrary.Tournament Tournament { get; private set; }
 
         public TableTestService(HttpClient http, NavigationManager navigationManager)
@@ -23,7 +23,7 @@ namespace TournamentWebTest.Services
             _http = http;
             _navigationManager = navigationManager;
 
-            Tournament = new Tournament(new object()) { Autosave = false };
+            Tournament = new Tournament();
             TournamentLibrary.Timers.Timer timer = new TournamentLibrary.Timers.Timer();
             timer.SetTime(new TimeSpan(0, 10, 0)); // 10 minutes
             timer.Tick += Timer_Tick;
@@ -62,7 +62,7 @@ namespace TournamentWebTest.Services
             {
                 Settings = new TournamentLibrary.GroupStages.GroupStageSettings { AmountGroups = 1, GroupSize = 5 }
             };
-            TestGroupStage1 = new GroupNew("Test Group Stage 1", Tournament.GroupStage1, new TeamList(teams));
+            TestGroupStage1 = new Group("Test Group Stage 1", Tournament.GroupStage1, new TeamList(teams));
             Tournament.GroupStage1.AddGroup(TestGroupStage1);
             var team1 = teams[0];
             var team2 = teams[1];
@@ -91,7 +91,7 @@ namespace TournamentWebTest.Services
             {
                 Settings = new TournamentLibrary.GroupStages.GroupStageSettings { AmountGroups = 1, GroupSize = 3 }
             };
-            TestGroupStage2 = new GroupNew("Test Group Stage 2", Tournament.GroupStage2, new TeamList(teams));
+            TestGroupStage2 = new Group("Test Group Stage 2", Tournament.GroupStage2, new TeamList(teams));
             Tournament.GroupStage2.AddGroup(TestGroupStage2);
 
             var team1 = teams[0];
