@@ -1,0 +1,59 @@
+﻿@using TournamentLibrary.Matches
+@using TournamentLibrary.Teams
+<table class="table table-bordered table-sm">
+    <thead class="table-light">
+        <tr>
+            <th>Nr</th>
+            <th>Gruppe</th>
+            <th>Name A</th>
+            <th>Name B</th>
+            <th>Score A</th>
+            <th>Score B</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var match in Matches)
+        {
+            <tr>
+                <td>@match.OverallMatchNumber</td>
+                <td>@match.Group</td>
+                <td style="background-color:@GetColor(match.TeamA)">
+                    @match.NameTeamA
+                </td>
+                <td style="background-color:@GetColor(match.TeamB)">
+                    @match.NameTeamB
+                </td>
+                <td>
+                    <input type="number"
+                           class="form-control form-control-sm"
+                           style="width: 60px;"
+                           min="0"
+                           value="@match.ScoreA"
+                           disabled="@IsLocked"
+                           @oninput="(e) => OnScoreChanged.InvokeAsync((e, match, true))" />
+                </td>
+                <td>
+                    <input type="number"
+                           class="form-control form-control-sm"
+                           style="width: 60px;"
+                           min="0"
+                           value="@match.ScoreB"
+                           disabled="@IsLocked"
+                           @oninput="(e) => OnScoreChanged.InvokeAsync((e, match, false))" />
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter, EditorRequired] public IEnumerable<Match> Matches { get; set; } = Array.Empty<Match>();
+    [Parameter, EditorRequired] public Dictionary<Team, string> TeamColors { get; set; } = new();
+    [Parameter] public bool IsLocked { get; set; }
+
+    // Tuple: (ChangeEventArgs e, Match match, bool isTeamA)
+    [Parameter, EditorRequired] public EventCallback<(ChangeEventArgs, Match, bool)> OnScoreChanged { get; set; }
+
+    private string GetColor(Team teamKey) =>
+        TeamColors.TryGetValue(teamKey, out var c) ? c : "white";
+}

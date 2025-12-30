@@ -22,8 +22,9 @@ namespace TournamentWebTest.Services
         {
             _http = http;
             _navigationManager = navigationManager;
-
+            Console.WriteLine("TableTestService loading...");
             Tournament = new Tournament();
+            Console.WriteLine("Tournament created");
             TournamentLibrary.Timers.Timer timer = new TournamentLibrary.Timers.Timer();
             timer.SetTime(new TimeSpan(0, 10, 0)); // 10 minutes
             timer.Tick += Timer_Tick;
@@ -47,6 +48,7 @@ namespace TournamentWebTest.Services
             teams.RemoveAt(0);
             teams.RemoveAt(0);
             InitStage2(teams);
+            Console.WriteLine("TableTestService finished loading...");
         }
 
         public string CurrentTime { get; set; } = "unknown";
@@ -70,19 +72,22 @@ namespace TournamentWebTest.Services
             var team4 = teams[3];
             var team5 = teams[4];
             int i = 1;
-            Tournament.Fixtures.AddRange(new List<Match>
-            {
-                new Match() { OverallMatchNumber = i++, TeamA = team1, TeamB = team2, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
-                new Match() { OverallMatchNumber = i++, TeamA = team3, TeamB = team4, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
-                new Match() { OverallMatchNumber = i++, TeamA = team5, TeamB = team1, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
-                new Match() { OverallMatchNumber = i++, TeamA = team2, TeamB = team3, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
-                new Match() { OverallMatchNumber = i++, TeamA = team4, TeamB = team5, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
-                new Match() { OverallMatchNumber = i++, TeamA = team3, TeamB = team1, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
-                new Match() { OverallMatchNumber = i++, TeamA = team4, TeamB = team2, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
-                new Match() { OverallMatchNumber = i++, TeamA = team5, TeamB = team3, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
-                new Match() { OverallMatchNumber = i++, TeamA = team1, TeamB = team4, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
-                new Match() { OverallMatchNumber = i++, TeamA = team2, TeamB = team5, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
-            });
+
+            //Tournament.GroupStage1.Groups[0].Fixtures
+
+            //Tournament.GroupStage1.Groups[0](new List<Match>
+            //{
+            //    new Match() { OverallMatchNumber = i++, TeamA = team1, TeamB = team2, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
+            //    new Match() { OverallMatchNumber = i++, TeamA = team3, TeamB = team4, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
+            //    new Match() { OverallMatchNumber = i++, TeamA = team5, TeamB = team1, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
+            //    new Match() { OverallMatchNumber = i++, TeamA = team2, TeamB = team3, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
+            //    new Match() { OverallMatchNumber = i++, TeamA = team4, TeamB = team5, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
+            //    new Match() { OverallMatchNumber = i++, TeamA = team3, TeamB = team1, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
+            //    new Match() { OverallMatchNumber = i++, TeamA = team4, TeamB = team2, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
+            //    new Match() { OverallMatchNumber = i++, TeamA = team5, TeamB = team3, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
+            //    new Match() { OverallMatchNumber = i++, TeamA = team1, TeamB = team4, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
+            //    new Match() { OverallMatchNumber = i++, TeamA = team2, TeamB = team5, Round = TournamentLibrary.Types.RoundType.GroupStage1, State = State.Finished, Group = TestGroupStage1 },
+            //});
         }
 
         private void InitStage2(List<Team> teams)
