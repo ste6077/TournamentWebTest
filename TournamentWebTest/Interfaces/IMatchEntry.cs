@@ -1,0 +1,15 @@
+﻿using TournamentLibrary.Teams;
+
+namespace TournamentWebTest.Interfaces
+{
+    public interface IMatchEntry
+    {
+        public int GameNumber { get; set; }
+        public int ScoreA { get; set; }
+        public int ScoreB { get; set; }
+        public string NameTeamA { get; set; }
+        public string NameTeamB { get; set; }
+        public int GoldenGoalRound { get; set; }
+        public int GoldenGoalSecond { get; set; }
+    }
+}

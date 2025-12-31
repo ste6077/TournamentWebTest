@@ -12,5 +12,6 @@ builder.Services.AddScoped<TeamService>();
 builder.Services.AddScoped<TableTestService>();
 builder.Services.AddScoped<ArenaCup2026TestService>();
 builder.Services.AddScoped<HartmutLayer2026TestService>();
+builder.Services.AddScoped<IBackupFileService, BackupFileService>();
 
 await builder.Build().RunAsync();

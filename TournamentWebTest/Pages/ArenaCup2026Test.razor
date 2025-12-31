@@ -9,7 +9,12 @@
 @using TournamentLibrary.Matches;
 @using TournamentLibrary.Teams;
 @using TournamentLibrary.Groups;
+@using Microsoft.AspNetCore.Components.Forms
+@inject IBackupFileService Backup
 @inject ArenaCup2026TestService TestService
+
+<button class="btn btn-primary" @onclick="SaveMatches">Matches Backup herunterladen</button>
+<InputFile OnChange="LoadMatches" accept="application/json" />
 
 @* Stage 1 *@
 <details open class="mb-3">
@@ -291,6 +296,51 @@
     };
 
 
+    private async Task SaveMatches()
+    {
+        var tmp = new List<MatchEntry>(ScheduleStage1);
+        tmp.AddRange(ScheduleStage2);
+        tmp.AddRange(ScheduleFinalStage);
+        var matches = tmp.Select(t => new MatchEntryFileProperties(t)).ToList();
+        await Backup.SaveAsync(matches, $"arenacup-matches-backup {DateTime.Now:HH-mm-ss}.json");
+    }
+
+    private async Task LoadMatches(InputFileChangeEventArgs e)
+    {
+        if (TestService.Tournament == null || TestService.Tournament.Fixtures.Count == 0)
+            return;
+
+        var file = e.File;
+        if (file is null) return;
+
+        var matches = await Backup.LoadAsync<List<MatchEntryFileProperties>>(file);
+        if (matches is null) return;
+
+        var tmp = new List<MatchEntry>(ScheduleStage1);
+        tmp.AddRange(ScheduleStage2);
+        tmp.AddRange(ScheduleFinalStage);
+
+        foreach(var match in tmp)
+        {
+            var matchData = matches.FirstOrDefault(m => m.GameNumber == match.GameNumber);
+            if (matchData != null)
+            {
+                match.ScoreA = matchData.ScoreA;
+                match.ScoreB = matchData.ScoreB;
+                ChangeMatchScore(match.MatchLink, match.ScoreA, match.ScoreB);
+
+                match.MatchLink.State = matchData.IsFinished ? State.Finished : State.NotStarted;
+
+                if (match.MatchLink.State == State.Finished)
+                {
+                    TestService.Tournament.HandleMatchFinished(match.MatchLink);
+                }
+            }
+        }
+
+        Refresh();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         // Async Initialisierung, z. B. Daten laden
@@ -310,9 +360,7 @@
         {
             Group2Colors.Add(TestService.Tournament.GroupStage2.Groups[i], Utilities.Colors.Stage2GroupColors[i]);
         }
-        ScheduleStage1 = InitializeSchedule(TestService.Tournament.GroupStage1.Fixtures);
-        ScheduleStage2 = InitializeSchedule(TestService.Tournament.GroupStage2.Fixtures);
-        ScheduleFinalStage = InitializeSchedule(TestService.Tournament.FinalStage.GetCompleteFixtures());
+        ReloadSchedules();
 
         Console.WriteLine($"FinalStage: {ScheduleFinalStage.Count}");
 
@@ -320,6 +368,21 @@
         Refresh();
 
         _internalProgress = false;
+    }
+
+    /// <summary>
+    /// Spielpläne neu laden
+    /// </summary>
+    private void ReloadSchedules()
+    {
+        ScheduleStage1.Clear();
+        ScheduleStage1.AddRange(InitializeSchedule(TestService.Tournament.GroupStage1.Fixtures));
+
+        ScheduleStage2.Clear();
+        ScheduleStage2.AddRange(InitializeSchedule(TestService.Tournament.GroupStage2.Fixtures));
+
+        ScheduleFinalStage.Clear();
+        ScheduleFinalStage.AddRange(InitializeSchedule(TestService.Tournament.FinalStage.GetCompleteFixtures()));
     }
 
     /// <summary>
@@ -349,14 +412,7 @@
             else
                 match.ScoreB = newValue;
 
-            match.MatchLink.GoalsTeamA.Clear();
-            match.MatchLink.GoalsTeamB.Clear();
-
-            for (int i = 0; i < match.ScoreA; i++)
-                match.MatchLink.GoalsTeamA.Add(new Goal() { ParentMatch = match.MatchLink });
-
-            for (int i = 0; i < match.ScoreB; i++)
-                match.MatchLink.GoalsTeamB.Add(new Goal() { ParentMatch = match.MatchLink });
+            ChangeMatchScore(match.MatchLink, match.ScoreA, match.ScoreB);
         }
 
         if (match.MatchLink.IsPlayoffsMatch)
@@ -372,6 +428,24 @@
         TestService.Tournament.ForceModeHandlerTournamentProgress();
 
         Refresh();
+    }
+
+    /// <summary>
+    /// Score eines Matches ändern
+    /// </summary>
+    /// <param name="match"></param>
+    /// <param name="scoreA"></param>
+    /// <param name="scoreB"></param>
+    private void ChangeMatchScore(Match match, int scoreA, int scoreB)
+    {
+        match.GoalsTeamA.Clear();
+        match.GoalsTeamB.Clear();
+
+        for (int i = 0; i < scoreA; i++)
+            match.GoalsTeamA.Add(new Goal() { ParentMatch = match });
+
+        for (int i = 0; i < scoreB; i++)
+            match.GoalsTeamB.Add(new Goal() { ParentMatch = match });
     }
 
     private void OnLockChanged()
@@ -485,15 +559,7 @@
     {
         Console.WriteLine($"Refresh triggered...");
         TestService.Tournament.ForceModeHandlerTournamentProgress();
-
-        if (IsStage1Editable)
-        {
-            ScheduleStage2.Clear();
-            ScheduleStage2.AddRange(InitializeSchedule(TestService.Tournament.GroupStage2.Fixtures));
-        }
-
-        ScheduleFinalStage.Clear();
-        ScheduleFinalStage.AddRange(InitializeSchedule(TestService.Tournament.FinalStage.GetCompleteFixtures()));
+        ReloadSchedules();
 
         UpdateTableEntries(GroupTableA, TestService.Tournament.GroupStage1.Groups[0].GetTable());
         UpdateTableEntries(GroupTableB, TestService.Tournament.GroupStage1.Groups[1].GetTable());
