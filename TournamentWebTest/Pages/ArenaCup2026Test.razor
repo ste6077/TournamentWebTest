@@ -12,23 +12,6 @@
 @inject ArenaCup2026TestService TestService
 
 @* Stage 1 *@
-<div class="d-flex align-items-center gap-3 mb-2">
-    <div class="form-check" style="background-color: #40E0D0;">
-        <input class="form-check-input"
-               type="checkbox"
-               id="lockEdit"
-               @bind="IsStage1Locked" />
-        <label class="form-check-label fw-bold fs-4" for="lockEdit">
-            Stage 2 aktivieren
-        </label>
-    </div>
-
-    @if (IsStage1Locked)
-    {
-        <span class="badge text-bg-secondary">Gesperrt</span>
-    }
-</div>
-
 <details open class="mb-3">
     <summary class="fw-bold fs-5">
         Gruppenphase 1
@@ -71,14 +54,14 @@
         <input class="form-check-input"
                type="checkbox"
                id="lockEdit"
-               @bind="Stage2Locked"
-               disabled="@IsStage1Editable" />
+               @bind="IsStage1Locked"
+               @oninput="() => OnLockChanged()" />
         <label class="form-check-label fw-bold fs-4" for="lockEdit">
-            Playoffs aktivieren
+            Stage 2 aktivieren
         </label>
     </div>
 
-    @if (Stage2Locked)
+    @if (IsStage1Locked)
     {
         <span class="badge text-bg-secondary">Gesperrt</span>
     }
@@ -122,6 +105,25 @@
 </details>
 
 @* Final Stage *@
+<div class="d-flex align-items-center gap-3 mb-2">
+    <div class="form-check" style="background-color: #40E0D0;">
+        <input class="form-check-input"
+               type="checkbox"
+               id="lockEdit"
+               @bind="Stage2Locked"
+               disabled="@IsStage1Editable"
+               @oninput="() => OnLockChanged()"/>
+        <label class="form-check-label fw-bold fs-4" for="lockEdit">
+            Playoffs aktivieren
+        </label>
+    </div>
+
+    @if (Stage2Locked)
+    {
+        <span class="badge text-bg-secondary">Gesperrt</span>
+    }
+</div>
+
 <details open class="mb-3">
     <summary class="fw-bold fs-5">
         Playoffs
@@ -255,8 +257,8 @@
     private bool IsStage1Editable => !IsStage1Locked;
     private bool Stage2Locked;
     private bool IsStage2Locked => Stage2Locked || !IsStage1Locked;
-    private bool IsFinalStageActive => Stage2Locked && IsStage1Locked;
-    private bool IsFinalStageInactive => !IsFinalStageActive;
+    private bool IsFinalStageInactive => !Stage2Locked;
+    private bool IsFinalStageActive => Stage2Locked;
 
     // Beispielhafte Daten
     private List<MatchEntry> ScheduleStage1 = new();
@@ -315,7 +317,7 @@
         Console.WriteLine($"FinalStage: {ScheduleFinalStage.Count}");
 
         items.AddRange(TestService.Tournament.GroupStage1.Teams.Select(t => t.Name));
-        UpdateTables();
+        Refresh();
 
         _internalProgress = false;
     }
@@ -355,36 +357,38 @@
 
             for (int i = 0; i < match.ScoreB; i++)
                 match.MatchLink.GoalsTeamB.Add(new Goal() { ParentMatch = match.MatchLink });
-
-
-            if (match.MatchLink != null && ((match.MatchLink.HasGroup && match.MatchLink.Group.GroupStage.Round == RoundType.GroupStage2) || match.MatchLink.IsPlayoffsMatch))
-            {
-                Console.WriteLine($"Updating Final Stage Schedule -> PlayoffsMatch: {match.MatchLink.IsPlayoffsMatch} | Draw: {match.MatchLink.IsDraw}");
-
-                if (match.MatchLink.IsPlayoffsMatch)
-                {
-                    match.MatchLink.State = !match.MatchLink.IsDraw ? State.Finished : State.NotStarted;
-
-                    if (match.MatchLink.IsFinished)
-                    {
-                        TestService.Tournament.HandleMatchFinished(match.MatchLink);
-                    }
-                    HandleMatchGoldenGoalFinish(match);
-                }
-                TestService.Tournament.ForceModeHandlerTournamentProgress();
-                ScheduleFinalStage.Clear();
-                var schedule = TestService.Tournament.FinalStage.GetCompleteFixtures();
-
-                foreach (var m in schedule)
-                {
-                    Console.WriteLine(m.GetDebugMatchText());
-                }
-
-                ScheduleFinalStage.AddRange(InitializeSchedule(schedule));
-            }
-
-            UpdateTables();
         }
+
+        if (match.MatchLink.IsPlayoffsMatch)
+        {
+            match.MatchLink.State = !match.MatchLink.IsDraw ? State.Finished : State.NotStarted;
+
+            if (match.MatchLink.IsFinished)
+            {
+                TestService.Tournament.HandleMatchFinished(match.MatchLink);
+            }
+            HandleMatchGoldenGoalFinish(match);
+        }
+        TestService.Tournament.ForceModeHandlerTournamentProgress();
+
+        Refresh();
+    }
+
+    private void OnLockChanged()
+    {
+        Console.WriteLine($"On lock changed: Stage2Locked {IsStage2Locked}  | FinalStageActive {IsFinalStageActive}");
+
+        foreach (var m in TestService.Tournament.GroupStage2.Fixtures)
+        {
+            m.State = IsStage2Locked ? State.Finished : State.NotStarted;
+        }
+
+        foreach (var m in TestService.Tournament.FinalStage.GetCompleteFixtures())
+        {
+            m.State = IsFinalStageActive ? State.NotStarted : m.State;
+        }
+
+        Refresh();
     }
 
     /// <summary>
@@ -471,14 +475,26 @@
             m.ScoreB = 0;
         }
 
-        UpdateTables();
+        Refresh();
     }
 
     /// <summary>
     /// Gruppentabellen updaten
     /// </summary>
-    private void UpdateTables()
+    private void Refresh()
     {
+        Console.WriteLine($"Refresh triggered...");
+        TestService.Tournament.ForceModeHandlerTournamentProgress();
+
+        if (IsStage1Editable)
+        {
+            ScheduleStage2.Clear();
+            ScheduleStage2.AddRange(InitializeSchedule(TestService.Tournament.GroupStage2.Fixtures));
+        }
+
+        ScheduleFinalStage.Clear();
+        ScheduleFinalStage.AddRange(InitializeSchedule(TestService.Tournament.FinalStage.GetCompleteFixtures()));
+
         UpdateTableEntries(GroupTableA, TestService.Tournament.GroupStage1.Groups[0].GetTable());
         UpdateTableEntries(GroupTableB, TestService.Tournament.GroupStage1.Groups[1].GetTable());
         UpdateTableEntries(GroupTableC, TestService.Tournament.GroupStage1.Groups[2].GetTable());
@@ -538,6 +554,11 @@
         }
     }
 
+    /// <summary>
+    /// Spielplan initialisieren
+    /// </summary>
+    /// <param name="matches"></param>
+    /// <returns></returns>
     private List<MatchEntry> InitializeSchedule(List<Match> matches)
     {
         if (matches == null || !matches.Any())
@@ -552,7 +573,7 @@
 
             foreach (var match in matches)
             {
-                match.State = !match.IsPlayoffsMatch ? State.Finished : match.State;
+                match.State = match.HasGroup && match.Group.HasGroupStage && match.Group.GroupStage.Round == RoundType.GroupStage1 ? State.Finished : match.State;
             }
             return list;
         }
@@ -708,7 +729,7 @@
                 match.MatchLink.State = TournamentLibrary.PenaltyMatches.State.Finished;
             }
 
-            UpdateTables();
+            Refresh();
         }
     }
 
@@ -718,7 +739,7 @@
         if (int.TryParse(eventArgs.Value?.ToString(), out int newValue) && newValue >= 0)
         {
             //match.MatchLink.Round = newValue;
-            UpdateTables();
+            Refresh();
         }
     }
 

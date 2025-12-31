@@ -12,24 +12,14 @@
 @inject HartmutLayer2026TestService TestService
 
 @* Stage 1 *@
-<div class="d-flex align-items-center gap-3 mb-2">
-    <div class="form-check">
-        <input class="form-check-input"
-               type="checkbox"
-               id="lockEdit"
-               @bind="IsStage1Locked" />
-        <label class="form-check-label fw-bold fs-4" for="lockEdit">
-            Playoffs aktivieren
-        </label>
-    </div>
-
-    @if (IsStage1Locked)
-    {
-        <span class="badge text-bg-secondary">Gesperrt</span>
-    }
-</div>
-
 <details open class="mb-3">
+    <summary class="fw-bold fs-5">
+        Gruppenphase
+        <span class="text-muted fs-6 ms-2">
+            (zum Ein- / Ausklappen)
+        </span>
+    </summary>
+
     <details open class="mb-3">
         <summary class="h5 mb-2" style="cursor:pointer;">Spielplan Gruppenphase</summary>
 
@@ -58,8 +48,31 @@
 </details>
 
 @* Final Stage *@
-<details open class="mb-3">
 
+<div class="d-flex align-items-center gap-3 mb-2">
+    <div class="form-check" style="background-color: #40E0D0;">
+        <input class="form-check-input"
+               type="checkbox"
+               id="lockEdit"
+               @bind="IsStage1Locked" />
+        <label class="form-check-label fw-bold fs-4" for="lockEdit">
+            Playoffs aktivieren
+        </label>
+    </div>
+
+    @if (IsStage1Locked)
+    {
+        <span class="badge text-bg-secondary">Gesperrt</span>
+    }
+</div>
+
+<details open class="mb-3">
+    <summary class="fw-bold fs-5">
+        Playoffs
+        <span class="text-muted fs-6 ms-2">
+            (zum Ein- / Ausklappen)
+        </span>
+    </summary>
     <details open class="mb-3">
         <summary class="h5 mb-2" style="cursor:pointer;">Spielplan Playoffs</summary>
 
@@ -311,6 +324,10 @@
     /// </summary>
     private void UpdateTables()
     {
+        TestService.Tournament.ForceModeHandlerTournamentProgress();
+        ScheduleFinalStage.Clear();
+        ScheduleFinalStage.AddRange(InitializeSchedule(TestService.Tournament.FinalStage.GetCompleteFixtures()));
+
         UpdateTableEntries(GroupTableA, TestService.Tournament.GroupStage1.Groups[0].GetTable());
         UpdateTableEntries(GroupTableB, TestService.Tournament.GroupStage1.Groups[1].GetTable());
 
