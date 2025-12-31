@@ -1,0 +1,38 @@
+﻿@using TournamentLibrary.Teams
+@using TournamentWebTest.Model
+@* Components/FinalTable.razor *@
+<h5 class="mt-4">@Title</h5>
+
+<table class="table table-bordered table-sm">
+    <thead class="table-light">
+        <tr>
+            <th>Platz</th>
+            <th>Team</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entry in Entries)
+        {
+            <tr>
+                <td>@entry.Position</td>
+                <td style="background-color:@GetColor(entry.Team)">
+                    @entry.TeamName
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter, EditorRequired] 
+    public string Title { get; set; } = "";
+
+    [Parameter, EditorRequired] 
+    public IEnumerable<FinalTableItem> Entries { get; set; } = Array.Empty<FinalTableItem>();
+
+    [Parameter, EditorRequired] 
+    public Dictionary<Team, string> TeamColors { get; set; } = new();
+
+    private string GetColor(Team teamKey) =>
+        TeamColors.TryGetValue(teamKey, out var c) ? c : "white";
+}

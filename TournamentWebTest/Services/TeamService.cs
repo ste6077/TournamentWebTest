@@ -24,24 +24,69 @@ namespace TournamentWebTest.Services
 
         public async Task<List<Team>> LoadTeamsAsync()
         {
+            if (IsLoaded) return Teams;
+
+            var tmpTeams = new List<Team>();
+
+            try
+            {
+                // WICHTIG: kein führender Slash
+                var indexPath = "Data/Teams/index.json";
+
+                var filenames = await _http.GetFromJsonAsync<List<string>>(indexPath);
+                if (filenames == null) return new List<Team>();
+
+                foreach (var file in filenames)
+                {
+                    try
+                    {
+                        var json = await _http.GetStringAsync($"Data/Teams/{file}");
+                        var team = TournamentLibrary.Utilities.JsonConverter
+                            .Deserialize<TournamentLibrary.Teams.File>(json)
+                            .GetTeam(file);
+
+                        if (team != null) tmpTeams.Add(team);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Fehler beim Laden von {file}: {ex.Message}");
+                    }
+                }
+
+                IsLoaded = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fehler beim Laden der Teamliste: {ex.Message}");
+            }
+
+            lock (_lock)
+            {
+                Teams.Clear();
+                Teams.AddRange(tmpTeams);
+                Console.WriteLine($"Teams geladen: {tmpTeams.Count}");
+                return Teams;
+            }
+        }
+
+        public async Task<List<Team>> LoadTeamsAsync1()
+        {
             if (IsLoaded)
                 return Teams;
             var tmpTeams = new List<Team>();
             try
             {
                 Console.WriteLine($"Teams laden...");
-                string basePath = _navigationManager.BaseUri.Contains("github.io")
-                    ? "TournamentWebTest/"
-                    : "";
-
-                var filenames = await _http.GetFromJsonAsync<List<string>>($"{basePath}data/teams/index.json");
+                string basePath = _navigationManager.BaseUri.Contains("github.io") ? "TournamentWebTest/" : "";
+                var indexPath = _navigationManager.BaseUri.Contains("github.io") ? $"{basePath}data/teams/index.json" : $"/Data/Teams/index.json";
+                Console.WriteLine($"Pfad: {indexPath}");
+                var filenames = await _http.GetFromJsonAsync<List<string>>(indexPath);
                 if (filenames == null)
                 {
-                    Console.WriteLine($"Keine Teams gefunden...");
+                    Console.WriteLine($"Keine Teams gefunden: {indexPath}");
                     return new List<Team>();
                 }
 
-                
                 foreach (var file in filenames)
                 {
                     try

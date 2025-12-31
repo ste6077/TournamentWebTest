@@ -10,6 +10,8 @@
             <th>Name B</th>
             <th>Score A</th>
             <th>Score B</th>
+            <th>Siegtor in GG Runde</th>
+            <th>Siegtor in GG in Sekunde</th>
         </tr>
     </thead>
     <tbody>
@@ -42,24 +44,52 @@
                            disabled="@IsLocked"
                            @oninput="(e) => OnScoreChanged.InvokeAsync((e, match, false))" />
                 </td>
+                <td>
+                    <input type="number"
+                           class="form-control form-control-sm"
+                           style="width: 60px;"
+                           min="0"
+                           max="3"
+                           value="@match.GoldenGoalRound"
+                           disabled="@IsLocked"
+                           @oninput="(e) => OnGoldenGoalRoundChanged.InvokeAsync((match, e))" />
+                </td>
+                <td>
+                    <input type="number"
+                            class="form-control form-control-sm"
+                            style="width: 60px;"
+                            min="1"
+                            max="59"
+                            disabled="@IsLocked"
+                            @bind-value="match.GoldenGoalSecond"
+                            @oninput="(e) => OnGoldenGoalSecondChanged.InvokeAsync((match, e))" />
+                </td>
             </tr>
         }
     </tbody>
 </table>
 
 @code {
-    [Parameter, EditorRequired] 
+    [Parameter, EditorRequired]
     public IEnumerable<MatchEntry> Matches { get; set; } = Array.Empty<MatchEntry>();
 
-    [Parameter, EditorRequired] 
+    [Parameter, EditorRequired]
     public Dictionary<Team, string> TeamColors { get; set; } = new();
 
-    [Parameter] 
+    [Parameter]
     public bool IsLocked { get; set; }
 
     // Tuple: (ChangeEventArgs e, Match match, bool isTeamA)
-    [Parameter, EditorRequired] 
+    [Parameter, EditorRequired]
     public EventCallback<(ChangeEventArgs, MatchEntry, bool)> OnScoreChanged { get; set; }
+
+    // Tuple: (ChangeEventArgs e, Match match, bool isTeamA)
+    [Parameter, EditorRequired]
+    public EventCallback<(MatchEntry, ChangeEventArgs)> OnGoldenGoalRoundChanged { get; set; }
+
+    // Tuple: (ChangeEventArgs e, Match match, bool isTeamA)
+    [Parameter, EditorRequired]
+    public EventCallback<(MatchEntry, ChangeEventArgs)> OnGoldenGoalSecondChanged { get; set; }
 
     private string GetColor(Team teamKey)
     {
@@ -69,6 +99,4 @@
         return TeamColors.TryGetValue(teamKey, out var c) ? c : "white";
     }
 
-
-        
 }

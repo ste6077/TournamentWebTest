@@ -11,5 +11,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped<TeamService>();
 builder.Services.AddScoped<TableTestService>();
 builder.Services.AddScoped<ArenaCup2026TestService>();
+builder.Services.AddScoped<HartmutLayer2026TestService>();
 
 await builder.Build().RunAsync();

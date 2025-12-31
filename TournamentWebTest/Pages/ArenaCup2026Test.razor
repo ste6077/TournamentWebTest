@@ -1,207 +1,161 @@
-﻿@page "/arenacup2026stagestest"
+﻿@page "/arenacup2026test"
 @using System.ComponentModel.DataAnnotations;
 @using TournamentLibrary.Goals
 @using TournamentLibrary.Tables
+@using TournamentLibrary.Types
+@using TournamentWebTest.Components
+@using TournamentWebTest.Model
 @using TournamentWebTest.Services
 @using TournamentLibrary.Matches;
 @using TournamentLibrary.Teams;
 @using TournamentLibrary.Groups;
 @inject ArenaCup2026TestService TestService
 
+@* Stage 1 *@
+<div class="d-flex align-items-center gap-3 mb-2">
+    <div class="form-check" style="background-color: #40E0D0;">
+        <input class="form-check-input"
+               type="checkbox"
+               id="lockEdit"
+               @bind="IsStage1Locked" />
+        <label class="form-check-label fw-bold fs-4" for="lockEdit">
+            Stage 2 aktivieren
+        </label>
+    </div>
 
-<h5>Spielplan Stage 1</h5>
-
-<table class="table table-bordered table-sm">
-    <thead class="table-light">
-        <tr>
-            <th>Nr</th>
-            <th>Gruppe</th>
-            <th>Name A</th>
-            <th>Name B</th>
-            <th>Score A</th>
-            <th>Score B</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var match in ScheduleStage1)
-        {
-            <tr>
-                <td>@match.GameNumber</td>
-                <td>@match.Group</td>
-                <td style="background-color:@TeamColors.GetValueOrDefault(match.TeamA, "white")">
-                    @match.NameTeamA
-                </td>
-                <td style="background-color:@TeamColors.GetValueOrDefault(match.TeamB, "white")">
-                    @match.NameTeamB
-                </td>
-                <td>
-                    <input type="number" class="form-control form-control-sm" style="width: 60px;" min="0" value="@match.ScoreA.ToString()" @oninput="(e) => OnScoreChanged(e, match, true)" />
-                </td>
-                <td>
-                    <input type="number" class="form-control form-control-sm" style="width: 60px;" min="0" value="@match.ScoreB.ToString()" @oninput="(e) => OnScoreChanged(e, match, false)" />
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<!-- Update -->
-<div class="my-3">
-    <button class="btn btn-lg" style="background-color: red; color: white;" @onclick="ResetScores">
-        Reset Scores
-    </button>
-    <p>@TestService.CurrentTime</p>
+    @if (IsStage1Locked)
+    {
+        <span class="badge text-bg-secondary">Gesperrt</span>
+    }
 </div>
 
-<!-- Gruppentabelle -->
-<h5 class="mt-4">Tabelle A</h5>
-<table class="table table-bordered table-sm">
-    <thead class="table-light">
-        <tr>
-            <th>Platz</th>
-            <th>Team</th>
-            <th>Spiele</th>
-            <th>Siege</th>
-            <th>Draw</th>
-            <th>Loss</th>
-            <th>Tore+</th>
-            <th>Tore–</th>
-            <th>Diff</th>
-            <th>Punkte</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var entry in GroupTableA)
-        {
-            <tr>
-                <td>@entry.Place</td>
-                <td style="background-color:@TeamColors.GetValueOrDefault(entry.Team, "white")">
-                    @entry.Name
-                </td>
-                <td>@entry.Played</td>
-                <td>@entry.Wins</td>
-                <td>@entry.Draws</td>
-                <td>@entry.Losses</td>
-                <td>@entry.GoalsFor</td>
-                <td>@entry.GoalsAgainst</td>
-                <td>@(entry.GoalsFor - entry.GoalsAgainst)</td>
-                <td>@entry.Points</td>
-            </tr>
-        }
-    </tbody>
-</table>
+<details open class="mb-3">
+    <summary class="fw-bold fs-5">
+        Gruppenphase 1
+        <span class="text-muted fs-6 ms-2">
+            (zum Ein- / Ausklappen)
+        </span>
+    </summary>
 
-<h5 class="mt-4">Tabelle B</h5>
-<table class="table table-bordered table-sm">
-    <thead class="table-light">
-        <tr>
-            <th>Platz</th>
-            <th>Team</th>
-            <th>Spiele</th>
-            <th>Siege</th>
-            <th>Draw</th>
-            <th>Loss</th>
-            <th>Tore+</th>
-            <th>Tore–</th>
-            <th>Diff</th>
-            <th>Punkte</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var entry in GroupTableB)
-        {
-            <tr>
-                <td>@entry.Place</td>
-                <td style="background-color:@TeamColors.GetValueOrDefault(entry.Team, "white")">
-                    @entry.Name
-                </td>
-                <td>@entry.Played</td>
-                <td>@entry.Wins</td>
-                <td>@entry.Draws</td>
-                <td>@entry.Losses</td>
-                <td>@entry.GoalsFor</td>
-                <td>@entry.GoalsAgainst</td>
-                <td>@(entry.GoalsFor - entry.GoalsAgainst)</td>
-                <td>@entry.Points</td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <details open class="mb-3">
+        <summary class="h5 mb-2" style="cursor:pointer;">Spielplan Stage 1</summary>
 
-<h5 class="mt-4">Tabelle C</h5>
-<table class="table table-bordered table-sm">
-    <thead class="table-light">
-        <tr>
-            <th>Platz</th>
-            <th>Team</th>
-            <th>Spiele</th>
-            <th>Siege</th>
-            <th>Draw</th>
-            <th>Loss</th>
-            <th>Tore+</th>
-            <th>Tore–</th>
-            <th>Diff</th>
-            <th>Punkte</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var entry in GroupTableC)
-        {
-            <tr>
-                <td>@entry.Place</td>
-                <td style="background-color:@TeamColors.GetValueOrDefault(entry.Team, "white")">
-                    @entry.Name
-                </td>
-                <td>@entry.Played</td>
-                <td>@entry.Wins</td>
-                <td>@entry.Draws</td>
-                <td>@entry.Losses</td>
-                <td>@entry.GoalsFor</td>
-                <td>@entry.GoalsAgainst</td>
-                <td>@(entry.GoalsFor - entry.GoalsAgainst)</td>
-                <td>@entry.Points</td>
-            </tr>
-        }
-    </tbody>
-</table>
+        <ScheduleTable Matches="ScheduleStage1"
+                       TeamColors="TeamColors"
+                       IsLocked="IsStage1Locked"
+                       OnScoreChanged="HandleScoreChanged" />
+    </details>
 
-<h5>Spielplan Stage 2</h5>
+    <div class="my-3">
+        <button class="btn btn-lg"
+                style="background-color: red; color: white;"
+                @onclick="() => ResetScores(ScheduleStage1)"
+                disabled="@IsStage1Locked">
+            Reset Scores
+        </button>
+    </div>
 
-<table class="table table-bordered table-sm">
-    <thead class="table-light">
-        <tr>
-            <th>Nr</th>
-            <th>Gruppe</th>
-            <th>Name A</th>
-            <th>Name B</th>
-            <th>Score A</th>
-            <th>Score B</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var match in ScheduleStage2)
-        {
-            <tr>
-                <td>@match.GameNumber</td>
-                <td>@match.Group</td>
-                <td style="background-color:@TeamColors.GetValueOrDefault(match.TeamA, "white")">
-                    @match.NameTeamA
-                </td>
-                <td style="background-color:@TeamColors.GetValueOrDefault(match.TeamB, "white")">
-                    @match.NameTeamB
-                </td>
-                <td>
-                    <input type="number" class="form-control form-control-sm" style="width: 60px;" min="0" value="@match.ScoreA.ToString()" @oninput="(e) => OnScoreChanged(e, match, true)" />
-                </td>
-                <td>
-                    <input type="number" class="form-control form-control-sm" style="width: 60px;" min="0" value="@match.ScoreB.ToString()" @oninput="(e) => OnScoreChanged(e, match, false)" />
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <details open class="mt-4">
+        <summary class="h5 mb-2" style="cursor:pointer;">Gruppentabellen Stage 1</summary>
 
-<!-- Update -->
+        <GroupTable Title="Tabelle A" Entries="GroupTableA" TeamColors="TeamColors" />
+        <GroupTable Title="Tabelle B" Entries="GroupTableB" TeamColors="TeamColors" />
+        <GroupTable Title="Tabelle C" Entries="GroupTableC" TeamColors="TeamColors" />
+    </details>
+
+</details>
+
+@* Stage 2 *@
+<div class="d-flex align-items-center gap-3 mb-2">
+    <div class="form-check" style="background-color: #40E0D0;">
+        <input class="form-check-input"
+               type="checkbox"
+               id="lockEdit"
+               @bind="Stage2Locked"
+               disabled="@IsStage1Editable" />
+        <label class="form-check-label fw-bold fs-4" for="lockEdit">
+            Playoffs aktivieren
+        </label>
+    </div>
+
+    @if (Stage2Locked)
+    {
+        <span class="badge text-bg-secondary">Gesperrt</span>
+    }
+</div>
+
+<details open class="mb-3">
+    <summary class="fw-bold fs-5">
+        Gruppenphase 2
+        <span class="text-muted fs-6 ms-2">
+            (zum Ein- / Ausklappen)
+        </span>
+    </summary>
+
+    <details open class="mb-3">
+        <summary class="h5 mb-2" style="cursor:pointer;">Spielplan Stage 2</summary>
+
+        <ScheduleTable Matches="ScheduleStage2"
+                       TeamColors="TeamColors"
+                       IsLocked="IsStage2Locked"
+                       OnScoreChanged="HandleScoreChanged" />
+    </details>
+
+    <div class="my-3">
+        <button class="btn btn-lg"
+                style="background-color: red; color: white;"
+                @onclick="() => ResetScores(ScheduleStage2)"
+                disabled="@IsStage2Locked">
+            Reset Scores
+        </button>
+    </div>
+
+    <details open class="mt-4">
+        <summary class="h5 mb-2" style="cursor:pointer;">Gruppentabellen Stage 2</summary>
+
+        <GroupTable Title="Staffel 1" Entries="GroupStaffel1" TeamColors="TeamColors" />
+        <GroupTable Title="Staffel 2" Entries="GroupStaffel2" TeamColors="TeamColors" />
+        <GroupTable Title="Staffel 3" Entries="GroupStaffel3" TeamColors="TeamColors" />
+        <GroupTable Title="Staffel 4" Entries="GroupStaffel4" TeamColors="TeamColors" />
+        <GroupTable Title="Staffel 5" Entries="GroupStaffel5" TeamColors="TeamColors" />
+    </details>
+</details>
+
+@* Final Stage *@
+<details open class="mb-3">
+    <summary class="fw-bold fs-5">
+        Playoffs
+        <span class="text-muted fs-6 ms-2">
+            (zum Ein- / Ausklappen)
+        </span>
+    </summary>
+    <details open class="mb-3">
+        <summary class="h5 mb-2" style="cursor:pointer;">Spielplan Playoffs</summary>
+
+        <FinalScheduleTable Matches="ScheduleFinalStage"
+                       TeamColors="TeamColors"
+                       IsLocked="IsFinalStageInactive"
+                       OnScoreChanged="HandleScoreChanged"
+                       OnGoldenGoalRoundChanged="HandleGoldenGoalRoundChanged"
+                       OnGoldenGoalSecondChanged="HandleGoldenGoalSecondChanged"/>
+    </details>
+
+    <div class="my-3">
+        <button class="btn btn-lg"
+                style="background-color: red; color: white;"
+                @onclick="() => ResetScores(ScheduleFinalStage)"
+                disabled="@IsFinalStageInactive">
+            Reset Scores
+        </button>
+    </div>
+
+    <details open class="mt-4">
+        <summary class="h5 mb-2" style="cursor:pointer;">Abschlusstabelle</summary>
+        <FinalTable Title="Abschlusstabelle" Entries="FinalTable" TeamColors="TeamColors" />
+    </details>
+</details>
+
+@* Penalties *@
 <div class="my-3">
     <button class="btn btn-lg" style="background-color: green; color: white;" @onclick="OpenPopup">
         Penalty Shootout hinzufügen
@@ -277,7 +231,17 @@
                     <input type="number" class="form-control form-control-sm" style="width: 60px;" min="0" value="@entry.MatchLink.PenaltiesTeamB.AmountMissed.ToString()" @oninput="(e) => OnPenaltyScoreChanged(e, entry, isTeamA: false, miss: true)" />
                 </td>
                 <td>
-                    <input type="number" class="form-control form-control-sm" style="width: 60px;" min="0" value="@entry.MatchLink.Round" @oninput="(e) => OnPenaltyScoreChanged(e, entry, isTeamA: false, miss: true)" />
+                    <select class="form-select form-select-sm"
+                            style="width: 180px;"
+                            @bind="entry.MatchLink.Round">
+
+                        @foreach (var round in AllowedGroupStages)
+                        {
+                            <option value="@round">
+                                @Utilities.Extensions.GetDescription(round)
+                            </option>
+                        }
+                    </select>
                 </td>
                 <input class="form-check-input" type="checkbox" disabled="true" @bind="entry.IsFinished" />
             </tr>
@@ -285,57 +249,14 @@
     </tbody>
 </table>
 
-
-
 @code {
 
-    public class MatchEntry
-    {
-        public DateTime Time { get; set; } = DateTime.Now;
-        public int Sequence { get; set; }
-        public int GameNumber { get; set; }
-        public string Group { get; set; } = "";
-        public string NameTeamA { get; set; } = "";
-        public string NameTeamB { get; set; } = "";
-        public int ScoreA { get; set; }
-        public int ScoreB { get; set; }
-        public Team? TeamA { get; set; }
-        public Team? TeamB { get; set; }
-        public Match MatchLink { get; set; }
-
-        public MatchEntry() { }
-        public MatchEntry(TournamentLibrary.Matches.Match match)
-        {
-            try
-            {
-                Group = match.GroupName;
-                TeamA = match.TeamA;
-                TeamB = match.TeamB;
-                NameTeamA = match.NameTeamA;
-                NameTeamB = match.NameTeamB;
-                MatchLink = match;
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine($"Fehler beim MatchEntry Konstruktor -> {match.OverallMatchNumber}: {e.Message}");
-            }
-
-        }
-    }
-
-    public class TableEntry
-    {
-        public int Place { get; set; } = 5;
-        public string Name { get; set; } = "";
-        public int Played { get; set; }
-        public int Wins { get; set; }
-        public int Draws { get; set; }
-        public int Losses { get; set; }
-        public int GoalsFor { get; set; }
-        public int GoalsAgainst { get; set; }
-        public int Points => Wins * 3 + Draws;
-        public Team? Team { get; set; }
-    }
+    private bool IsStage1Locked;
+    private bool IsStage1Editable => !IsStage1Locked;
+    private bool Stage2Locked;
+    private bool IsStage2Locked => Stage2Locked || !IsStage1Locked;
+    private bool IsFinalStageActive => Stage2Locked && IsStage1Locked;
+    private bool IsFinalStageInactive => !IsFinalStageActive;
 
     // Beispielhafte Daten
     private List<MatchEntry> ScheduleStage1 = new();
@@ -352,18 +273,20 @@
     private List<TableEntry> GroupStaffel4 = new();
     private List<TableEntry> GroupStaffel5 = new();
 
-    private List<TableEntry> FinalTable = new();
+    private List<FinalTableItem> FinalTable = new();
 
     private bool _internalProgress = false;
-
-    // Locks damit jeweils die nächste Stage bearbeitet werden kann
-    private bool _lockStage1 = false;
-    private bool _lockStage2 = false;
+    private bool _internalProgressGG = false;
 
     private Dictionary<Team, string> TeamColors = new Dictionary<Team, string>();
     private Dictionary<Group, string> Group1Colors = new Dictionary<Group, string>();
     private Dictionary<Group, string> Group2Colors = new Dictionary<Group, string>();
-    //private string[] AvailableColors = new[] { "#FFD700", "#ADD8E6", "#90EE90", "#FFA07A", "#DDA0DD" };
+
+    private static readonly RoundType[] AllowedGroupStages =
+    {
+        RoundType.GroupStage1,
+        RoundType.GroupStage2
+    };
 
 
     protected override async Task OnInitializedAsync()
@@ -389,12 +312,29 @@
         ScheduleStage2 = InitializeSchedule(TestService.Tournament.GroupStage2.Fixtures);
         ScheduleFinalStage = InitializeSchedule(TestService.Tournament.FinalStage.GetCompleteFixtures());
 
+        Console.WriteLine($"FinalStage: {ScheduleFinalStage.Count}");
+
         items.AddRange(TestService.Tournament.GroupStage1.Teams.Select(t => t.Name));
-        UpdateGroupTable();
+        UpdateTables();
 
         _internalProgress = false;
     }
 
+    /// <summary>
+    /// Handle Score Changed Eventhandler
+    /// </summary>
+    /// <param name="args"></param>
+    private void HandleScoreChanged((ChangeEventArgs e, MatchEntry match, bool isTeamA) args)
+    {
+        OnScoreChanged(args.e, args.match, args.isTeamA);
+    }
+
+    /// <summary>
+    /// Score geändert
+    /// </summary>
+    /// <param name="e"></param>
+    /// <param name="match"></param>
+    /// <param name="isTeamA"></param>
     private void OnScoreChanged(ChangeEventArgs e, MatchEntry match, bool isTeamA)
     {
         if (_internalProgress)
@@ -416,50 +356,140 @@
             for (int i = 0; i < match.ScoreB; i++)
                 match.MatchLink.GoalsTeamB.Add(new Goal() { ParentMatch = match.MatchLink });
 
-            UpdateGroupTable();
+
+            if (match.MatchLink != null && ((match.MatchLink.HasGroup && match.MatchLink.Group.GroupStage.Round == RoundType.GroupStage2) || match.MatchLink.IsPlayoffsMatch))
+            {
+                Console.WriteLine($"Updating Final Stage Schedule -> PlayoffsMatch: {match.MatchLink.IsPlayoffsMatch} | Draw: {match.MatchLink.IsDraw}");
+
+                if (match.MatchLink.IsPlayoffsMatch)
+                {
+                    match.MatchLink.State = !match.MatchLink.IsDraw ? State.Finished : State.NotStarted;
+
+                    if (match.MatchLink.IsFinished)
+                    {
+                        TestService.Tournament.HandleMatchFinished(match.MatchLink);
+                    }
+                    HandleMatchGoldenGoalFinish(match);
+                }
+                TestService.Tournament.ForceModeHandlerTournamentProgress();
+                ScheduleFinalStage.Clear();
+                var schedule = TestService.Tournament.FinalStage.GetCompleteFixtures();
+
+                foreach (var m in schedule)
+                {
+                    Console.WriteLine(m.GetDebugMatchText());
+                }
+
+                ScheduleFinalStage.AddRange(InitializeSchedule(schedule));
+            }
+
+            UpdateTables();
         }
     }
 
-    private void ResetScores()
+    /// <summary>
+    /// GG Finished behandeln
+    /// </summary>
+    /// <param name="matchEntry"></param>
+    private void HandleMatchGoldenGoalFinish(MatchEntry matchEntry)
     {
-        foreach (var m in ScheduleStage1)
+        //match != null && match.Winner != null && Math.Abs(match.ScoreA - match.ScoreB) == 1 && match.Settings.OvertimeFormat == OvertimeFormat.GoldenGoal;
+        var match = matchEntry.MatchLink;
+
+        if (Math.Abs((int)match.ScoreA - (int)match.ScoreB) != 1 || match.Settings.OvertimeFormat != OvertimeFormat.GoldenGoal || matchEntry.GoldenGoalRound == 0)
         {
-            m.MatchLink.GoalsTeamA.Clear();
-            m.MatchLink.GoalsTeamB.Clear();
+            // reset
+            Console.WriteLine($"Match GG Reset: {Math.Abs(match.ScoreA - match.ScoreB)} | {match.Settings.OvertimeFormat != OvertimeFormat.GoldenGoal} | {matchEntry.GoldenGoalRound == 0}");
+            match.OvertimeInfos.Finished = false;
+            return;
+        }
+
+        match.OvertimeInfos.Finished = true;
+        match.OvertimeInfos.IndexOfRoundGoldenGoalFinished = matchEntry.GoldenGoalRound - 1;
+        match.OvertimeInfos.GoldenGoalAdditiveElapsed = new TimeSpan(0, match.OvertimeInfos.IndexOfRoundGoldenGoalFinished, matchEntry.GoldenGoalSecond);
+        Console.WriteLine($"Match GG Finished set to {match.OvertimeInfos.Finished} at Round {match.OvertimeInfos.IndexOfRoundGoldenGoalFinished} + {match.OvertimeInfos.GoldenGoalAdditiveElapsed}");
+    }
+
+    /// <summary>
+    /// GG Runde geändert
+    /// </summary>
+    /// <param name="args"></param>
+    private void HandleGoldenGoalRoundChanged((MatchEntry matchEntry, ChangeEventArgs e) args)
+    {
+        if (_internalProgressGG)
+            return;
+        _internalProgressGG = true;
+
+        if (int.TryParse(args.e.Value?.ToString(), out var value))
+        {
+            Console.WriteLine($"Current GG Round {args.matchEntry.GoldenGoalRound}");
+            var entry = args.matchEntry;
+            var match = entry.MatchLink;
+            var round = value > 3 ? 3 : (value < 0 ? 0 : value);
+            args.matchEntry.GoldenGoalRound = round;
+            Console.WriteLine($"Try Golden Goal Round to {round}");
+            HandleMatchGoldenGoalFinish(args.matchEntry);
+        }
+        UpdateFinalTable();
+        _internalProgressGG = false;
+    }
+
+    /// <summary>
+    /// GG Sekunden geändert
+    /// </summary>
+    /// <param name="args"></param>
+    private void HandleGoldenGoalSecondChanged((MatchEntry matchEntry, ChangeEventArgs e) args)
+    {
+        if (_internalProgressGG)
+            return;
+        _internalProgressGG = true;
+
+        if (int.TryParse(args.e.Value?.ToString(), out var value))
+        {
+            var entry = args.matchEntry;
+            var match = entry.MatchLink;
+            var second = value > 59 ? 59 : (value < 1 ? 1 : value);
+            args.matchEntry.GoldenGoalSecond = second;
+            Console.WriteLine($"Try Golden Goal Seconds to {second}");
+            HandleMatchGoldenGoalFinish(args.matchEntry);
+        }
+        UpdateFinalTable();
+        _internalProgressGG = false;
+    }
+
+    /// <summary>
+    /// Scores zurücksetzen
+    /// </summary>
+    private void ResetScores(List<MatchEntry> schedule)
+    {
+        foreach (var m in schedule)
+        {
+            m.MatchLink?.GoalsTeamA.Clear();
+            m.MatchLink?.GoalsTeamB.Clear();
 
             m.ScoreA = 0;
             m.ScoreB = 0;
         }
 
-        UpdateGroupTable();
+        UpdateTables();
     }
 
-    private void UpdateGroupTable()
+    /// <summary>
+    /// Gruppentabellen updaten
+    /// </summary>
+    private void UpdateTables()
     {
-        // Optional: Tabelle neu berechnen
-        // GroupTableA?.Clear();
-        // GroupTableA = GroupTableA == null ? new() : GroupTableA;
-        // var tableA = TestService.Tournament.GroupStage1.Groups[0].GetTable();
-        // Console.WriteLine($"Tabelle A: {tableA.Count}");
-        // foreach (var p in tableA)
-        // {
-        //     GroupTableA.Add(new TableEntry
-        //     {
-        //         Place = (int)p.Place,
-        //         Name = p.Team.Name,
-        //         Team = p.Team,
-        //         Played = p.Statistics.Games,
-        //         Wins = p.Statistics.Win,
-        //         Draws = p.Statistics.Draw,
-        //         Losses = p.Statistics.Loss,
-        //         GoalsFor = p.Statistics.GoalsFor,
-        //         GoalsAgainst = p.Statistics.GoalsAgainst
-        //     });
-        // }
-
         UpdateTableEntries(GroupTableA, TestService.Tournament.GroupStage1.Groups[0].GetTable());
         UpdateTableEntries(GroupTableB, TestService.Tournament.GroupStage1.Groups[1].GetTable());
         UpdateTableEntries(GroupTableC, TestService.Tournament.GroupStage1.Groups[2].GetTable());
+
+        UpdateTableEntries(GroupStaffel1, TestService.Tournament.GroupStage2.Groups[0].GetTable());
+        UpdateTableEntries(GroupStaffel2, TestService.Tournament.GroupStage2.Groups[1].GetTable());
+        UpdateTableEntries(GroupStaffel3, TestService.Tournament.GroupStage2.Groups[2].GetTable());
+        UpdateTableEntries(GroupStaffel4, TestService.Tournament.GroupStage2.Groups[3].GetTable());
+        UpdateTableEntries(GroupStaffel5, TestService.Tournament.GroupStage2.Groups[4].GetTable());
+
+        UpdateFinalTable();
     }
 
     /// <summary>
@@ -487,6 +517,27 @@
         }
     }
 
+    /// <summary>
+    /// Abschlusstabelle updaten
+    /// </summary>
+    private void UpdateFinalTable()
+    {
+        var table = TestService.Tournament.GetFinalTable();
+
+        Console.WriteLine($"{TestService.Tournament.Mode} Final Table: {table.Count}");
+
+        FinalTable.Clear();
+
+        foreach (var p in table)
+        {
+            FinalTable.Add(new FinalTableItem
+            {
+                Position = (int)p.Place,
+                Team = p.Team
+            });
+        }
+    }
+
     private List<MatchEntry> InitializeSchedule(List<Match> matches)
     {
         if (matches == null || !matches.Any())
@@ -501,7 +552,7 @@
 
             foreach (var match in matches)
             {
-                match.State = State.Finished;
+                match.State = !match.IsPlayoffsMatch ? State.Finished : match.State;
             }
             return list;
         }
@@ -583,7 +634,10 @@
     private void AddPenaltyShotout(Team teamA, Team teamB)
     {
         if (teamA == teamB || teamA == null || teamB == null)
+        {
+            Console.WriteLine($"Penalty Teams NULL or Equal");
             return;
+        }
 
         GroupTableA[0].Name = "selectedItem1";
         var match = new TournamentLibrary.PenaltyMatches.PenaltyMatch()
@@ -654,7 +708,7 @@
                 match.MatchLink.State = TournamentLibrary.PenaltyMatches.State.Finished;
             }
 
-            UpdateGroupTable();
+            UpdateTables();
         }
     }
 
@@ -664,7 +718,7 @@
         if (int.TryParse(eventArgs.Value?.ToString(), out int newValue) && newValue >= 0)
         {
             //match.MatchLink.Round = newValue;
-            UpdateGroupTable();
+            UpdateTables();
         }
     }
 

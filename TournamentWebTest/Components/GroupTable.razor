@@ -1,0 +1,49 @@
+﻿@using TournamentLibrary.Teams
+@using TournamentWebTest.Model
+@* Components/GroupTable.razor *@
+<h5 class="mt-4">@Title</h5>
+
+<table class="table table-bordered table-sm">
+    <thead class="table-light">
+        <tr>
+            <th>Platz</th>
+            <th>Team</th>
+            <th>Spiele</th>
+            <th>Siege</th>
+            <th>Draw</th>
+            <th>Loss</th>
+            <th>Tore+</th>
+            <th>Tore–</th>
+            <th>Diff</th>
+            <th>Punkte</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entry in Entries)
+        {
+            <tr>
+                <td>@entry.Place</td>
+                <td style="background-color:@GetColor(entry.Team)">
+                    @entry.Name
+                </td>
+                <td>@entry.Played</td>
+                <td>@entry.Wins</td>
+                <td>@entry.Draws</td>
+                <td>@entry.Losses</td>
+                <td>@entry.GoalsFor</td>
+                <td>@entry.GoalsAgainst</td>
+                <td>@(entry.GoalsFor - entry.GoalsAgainst)</td>
+                <td>@entry.Points</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter, EditorRequired] public IEnumerable<TableEntry> Entries { get; set; } = Array.Empty<TableEntry>();
+    [Parameter, EditorRequired] public Dictionary<Team, string> TeamColors { get; set; } = new();
+
+    private string GetColor(Team teamKey) =>
+        TeamColors.TryGetValue(teamKey, out var c) ? c : "white";
+}
