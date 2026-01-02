@@ -44,6 +44,10 @@
     [Parameter, EditorRequired] public IEnumerable<TableEntry> Entries { get; set; } = Array.Empty<TableEntry>();
     [Parameter, EditorRequired] public Dictionary<Team, string> TeamColors { get; set; } = new();
 
-    private string GetColor(Team teamKey) =>
-        TeamColors.TryGetValue(teamKey, out var c) ? c : "white";
+    private string GetColor(Team teamKey)
+    {
+        if (teamKey == null)
+            return "white";
+        return TeamColors.TryGetValue(teamKey, out var c) ? c : "white";
+    }
 }

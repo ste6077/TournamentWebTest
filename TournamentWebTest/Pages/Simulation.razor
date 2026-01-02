@@ -1,0 +1,80 @@
+﻿@page "/simulation"
+@using TournamentLibrary.Goals
+@using TournamentLibrary.Tables
+@using TournamentLibrary.Types
+@using TournamentWebTest.Components
+@using TournamentWebTest.Model
+@using TournamentWebTest.Services
+@using TournamentLibrary.Matches;
+@using TournamentLibrary.Teams;
+@using TournamentLibrary.Groups;
+@inject SimulationService Service
+
+<details open class="mb-3">
+    <summary class="fw-bold fs-5">
+        Turnier erstellen/laden/speichern
+        <span class="text-muted fs-6 ms-2">
+            (zum Ein- / Ausklappen)
+        </span>
+    </summary>
+
+    <button class="btn btn-primary" @onclick="SaveTournament">Turnier speichern</button>
+    <InputFile OnChange="LoadTournament" accept="application/json" />
+
+    <select class="form-select form-select-sm"
+            style="width: 180px;"
+            @bind="tournamentMode">
+
+        @foreach (var round in AvailableModes)
+        {
+            <option value="@round">
+                @Utilities.Extensions.GetDescription(round)
+            </option>
+        }
+    </select>
+</details>
+
+<details open class="mb-3">
+    <summary class="fw-bold fs-5">
+        Spielsteuerung
+        <span class="text-muted fs-6 ms-2">
+            (zum Ein- / Ausklappen)
+        </span>
+    </summary>
+
+    <button class="btn btn-primary" @onclick="SaveTournament">Turnier speichern</button>
+    <InputFile OnChange="LoadTournament" accept="application/json" />
+
+    <select class="form-select form-select-sm"
+            style="width: 180px;"
+            @bind="tournamentMode">
+
+        @foreach (var round in AvailableModes)
+        {
+            <option value="@round">
+                @Utilities.Extensions.GetDescription(round)
+            </option>
+        }
+    </select>
+</details>
+
+
+@code {
+
+    private TournamentMode tournamentMode = TournamentMode.Bwk2026;
+    private static readonly TournamentLibrary.Types.TournamentMode[] AvailableModes =
+    {
+        TournamentMode.Bwk2026,
+        TournamentMode.HartmutLayerCup2026,
+    };
+
+    private void LoadTournament(InputFileChangeEventArgs e)
+    {
+        
+    }
+
+    private void SaveTournament()
+    {
+
+    }
+}

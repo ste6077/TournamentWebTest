@@ -382,7 +382,7 @@
         ScheduleStage2.AddRange(InitializeSchedule(TestService.Tournament.GroupStage2.Fixtures));
 
         ScheduleFinalStage.Clear();
-        ScheduleFinalStage.AddRange(InitializeSchedule(TestService.Tournament.FinalStage.GetCompleteFixtures()));
+        ScheduleFinalStage.AddRange(InitializeSchedule(TestService.Tournament.FinalStage.GetFixtures()));
     }
 
     /// <summary>
@@ -457,7 +457,7 @@
             m.State = IsStage2Locked ? State.Finished : State.NotStarted;
         }
 
-        foreach (var m in TestService.Tournament.FinalStage.GetCompleteFixtures())
+        foreach (var m in TestService.Tournament.FinalStage.GetFixtures())
         {
             m.State = IsFinalStageActive ? State.NotStarted : m.State;
         }

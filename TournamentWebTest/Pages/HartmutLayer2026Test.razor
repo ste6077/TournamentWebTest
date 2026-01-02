@@ -235,7 +235,7 @@
         }
 
         ScheduleStage1 = InitializeSchedule(TestService.Tournament.GroupStage1.Fixtures);
-        ScheduleFinalStage = InitializeSchedule(TestService.Tournament.FinalStage.GetCompleteFixtures());
+        ScheduleFinalStage = InitializeSchedule(TestService.Tournament.FinalStage.GetFixtures());
 
         Console.WriteLine($"FinalStage: {ScheduleFinalStage.Count}");
 
@@ -288,7 +288,7 @@
                 }
                 TestService.Tournament.ForceModeHandlerTournamentProgress();
                 ScheduleFinalStage.Clear();
-                var schedule = TestService.Tournament.FinalStage.GetCompleteFixtures();
+                var schedule = TestService.Tournament.FinalStage.GetFixtures();
 
                 foreach (var m in schedule)
                 {
@@ -326,7 +326,7 @@
     {
         TestService.Tournament.ForceModeHandlerTournamentProgress();
         ScheduleFinalStage.Clear();
-        ScheduleFinalStage.AddRange(InitializeSchedule(TestService.Tournament.FinalStage.GetCompleteFixtures()));
+        ScheduleFinalStage.AddRange(InitializeSchedule(TestService.Tournament.FinalStage.GetFixtures()));
 
         UpdateTableEntries(GroupTableA, TestService.Tournament.GroupStage1.Groups[0].GetTable());
         UpdateTableEntries(GroupTableB, TestService.Tournament.GroupStage1.Groups[1].GetTable());
