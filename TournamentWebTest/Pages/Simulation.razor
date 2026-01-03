@@ -42,20 +42,9 @@
         </span>
     </summary>
 
-    <button class="btn btn-primary" @onclick="SaveTournament">Turnier speichern</button>
-    <InputFile OnChange="LoadTournament" accept="application/json" />
+    <MatchControl>
 
-    <select class="form-select form-select-sm"
-            style="width: 180px;"
-            @bind="tournamentMode">
-
-        @foreach (var round in AvailableModes)
-        {
-            <option value="@round">
-                @Utilities.Extensions.GetDescription(round)
-            </option>
-        }
-    </select>
+    </MatchControl>
 </details>
 
 

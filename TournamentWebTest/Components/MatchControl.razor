@@ -1,0 +1,335 @@
+﻿@* MatchControl.razor *@
+<div class="container py-3">
+    <div class="card shadow-sm">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <span class="fw-bold">Spiel Nr</span>
+                <input class="form-control form-control-sm"
+                       style="width: 90px;"
+                       type="number"
+                       min="1"
+                       @bind="MatchNo" />
+            </div>
+
+            <button class="btn btn-primary btn-sm"
+                    @onclick="SetNextMatch">
+                Nächstes Match setzen
+            </button>
+        </div>
+
+        <div class="card-body">
+            <div class="row g-3 align-items-stretch">
+                <!-- Team A -->
+                <div class="col-12 col-md-5">
+                    <div class="border rounded p-3 h-100">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="@TeamALogoUrl"
+                                 alt="Logo Team A"
+                                 style="width:64px;height:64px;object-fit:contain;"
+                                 class="border rounded" />
+                            <div class="flex-grow-1">
+                                <label class="form-label mb-1">Name Team A</label>
+                                <input class="form-control"
+                                       @bind="TeamAName"
+                                       placeholder="Team A" />
+                            </div>
+
+                            <div class="text-end">
+                                <div class="small text-muted">Tore</div>
+                                <div class="display-6 mb-0">@GoalsA</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-success w-50"
+                                    @onclick="AddGoalA"
+                                    disabled="@IsLocked">
+                                + Tor Team A
+                            </button>
+                            <button class="btn btn-outline-danger w-50"
+                                    @onclick="RemoveGoalA"
+                                    disabled="@IsLocked || GoalsA <= 0">
+                                - Tor Team A
+                            </button>
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="form-label mb-1">Logo Team A (URL)</label>
+                            <input class="form-control form-control-sm"
+                                   @bind="TeamALogoUrl"
+                                   placeholder="https://..." />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Center: Match actions -->
+                <div class="col-12 col-md-2">
+                    <div class="border rounded p-3 h-100 d-flex flex-column gap-2">
+                        <div class="text-center">
+                            <div class="small text-muted">Match-Status</div>
+                            <div class="fw-bold">@Status</div>
+                            <div class="small text-muted mt-2">Zeit</div>
+                            <div class="fw-bold">@TimeDisplay</div>
+                        </div>
+
+                        <hr class="my-2" />
+
+                        <button class="btn btn-success btn-sm"
+                                @onclick="Start"
+                                disabled="@IsLocked || IsRunning">
+                            Start
+                        </button>
+
+                        <button class="btn btn-warning btn-sm"
+                                @onclick="Pause"
+                                disabled="@IsLocked || !IsRunning || IsPaused">
+                            Pause
+                        </button>
+
+                        <button class="btn btn-info btn-sm"
+                                @onclick="Continue"
+                                disabled="@IsLocked || !IsPaused">
+                            Continue
+                        </button>
+
+                        <button class="btn btn-danger btn-sm"
+                                @onclick="Stop"
+                                disabled="@IsLocked || (!IsRunning && !IsPaused)">
+                            Stop
+                        </button>
+
+                        <hr class="my-2" />
+
+                        <button class="btn btn-outline-secondary btn-sm"
+                                @onclick="Simulate"
+                                disabled="@IsLocked">
+                            Simulieren
+                        </button>
+
+                        <button class="btn btn-outline-primary btn-sm"
+                                @onclick="SetTimeTo5s"
+                                disabled="@IsLocked">
+                            Zeit auf 5s setzen
+                        </button>
+
+                        <div class="form-check mt-auto">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="lockUi"
+                                   @bind="IsLocked" />
+                            <label class="form-check-label" for="lockUi">
+                                UI sperren
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team B -->
+                <div class="col-12 col-md-5">
+                    <div class="border rounded p-3 h-100">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="@TeamBLogoUrl"
+                                 alt="Logo Team B"
+                                 style="width:64px;height:64px;object-fit:contain;"
+                                 class="border rounded" />
+                            <div class="flex-grow-1">
+                                <label class="form-label mb-1">Name Team B</label>
+                                <input class="form-control"
+                                       @bind="TeamBName"
+                                       placeholder="Team B" />
+                            </div>
+
+                            <div class="text-end">
+                                <div class="small text-muted">Tore</div>
+                                <div class="display-6 mb-0">@GoalsB</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-success w-50"
+                                    @onclick="AddGoalB"
+                                    disabled="@IsLocked">
+                                + Tor Team B
+                            </button>
+                            <button class="btn btn-outline-danger w-50"
+                                    @onclick="RemoveGoalB"
+                                    disabled="@IsLocked || GoalsB <= 0">
+                                - Tor Team B
+                            </button>
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="form-label mb-1">Logo Team B (URL)</label>
+                            <input class="form-control form-control-sm"
+                                   @bind="TeamBLogoUrl"
+                                   placeholder="https://..." />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ergebnis setzen -->
+            <div class="mt-4 border rounded p-3">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="fw-bold">Ergebnis setzen</div>
+                    <div class="small text-muted">Zwei numerische Auswahlmöglichkeiten + Button</div>
+                </div>
+
+                <div class="row g-2 align-items-end mt-1">
+                    <div class="col-12 col-md-4">
+                        <label class="form-label mb-1">Team A Ergebnis</label>
+                        <input class="form-control"
+                               type="number"
+                               min="0"
+                               @bind="SetResultA" />
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label class="form-label mb-1">Team B Ergebnis</label>
+                        <input class="form-control"
+                               type="number"
+                               min="0"
+                               @bind="SetResultB" />
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <button class="btn btn-dark w-100"
+                                @onclick="ApplyResult"
+                                disabled="@IsLocked">
+                            Ergebnis übernehmen
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(LastAction))
+            {
+                <div class="alert alert-secondary mt-3 mb-0">
+                    <span class="fw-bold">Letzte Aktion:</span> @LastAction
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    // --- UI State / Binding ---
+    private int MatchNo { get; set; } = 1;
+
+    private string TeamAName { get; set; } = "Team A";
+    private string TeamBName { get; set; } = "Team B";
+
+    // Default placeholder logos (kannst du ersetzen)
+    private string TeamALogoUrl { get; set; } = "images/teamA.png";
+    private string TeamBLogoUrl { get; set; } = "images/teamB.png";
+
+    private int GoalsA { get; set; }
+    private int GoalsB { get; set; }
+
+    private bool IsLocked { get; set; }
+
+    // Match flow
+    private bool IsRunning { get; set; }
+    private bool IsPaused { get; set; }
+
+    private int ClockSeconds { get; set; } = 0;
+
+    // Ergebnis setzen
+    private int SetResultA { get; set; }
+    private int SetResultB { get; set; }
+
+    private string LastAction { get; set; } = "";
+
+    private string Status =>
+        IsRunning ? "Running" :
+        IsPaused ? "Paused" :
+        "Stopped";
+
+    private string TimeDisplay => $"{ClockSeconds}s";
+
+    // --- Actions (hier später an Service/SignalR/API anbinden) ---
+    private void SetNextMatch()
+    {
+        MatchNo++;
+        GoalsA = 0;
+        GoalsB = 0;
+        ClockSeconds = 0;
+        IsRunning = false;
+        IsPaused = false;
+        LastAction = $"Nächstes Match gesetzt: #{MatchNo}";
+    }
+
+    private void AddGoalA()
+    {
+        GoalsA++;
+        LastAction = $"{TeamAName}: Tor hinzugefügt (jetzt {GoalsA}:{GoalsB})";
+    }
+
+    private void RemoveGoalA()
+    {
+        if (GoalsA > 0) GoalsA--;
+        LastAction = $"{TeamAName}: Tor entfernt (jetzt {GoalsA}:{GoalsB})";
+    }
+
+    private void AddGoalB()
+    {
+        GoalsB++;
+        LastAction = $"{TeamBName}: Tor hinzugefügt (jetzt {GoalsA}:{GoalsB})";
+    }
+
+    private void RemoveGoalB()
+    {
+        if (GoalsB > 0) GoalsB--;
+        LastAction = $"{TeamBName}: Tor entfernt (jetzt {GoalsA}:{GoalsB})";
+    }
+
+    private void Start()
+    {
+        IsRunning = true;
+        IsPaused = false;
+        LastAction = "Start";
+    }
+
+    private void Stop()
+    {
+        IsRunning = false;
+        IsPaused = false;
+        LastAction = "Stop";
+    }
+
+    private void Pause()
+    {
+        if (!IsRunning) return;
+        IsRunning = false;
+        IsPaused = true;
+        LastAction = "Pause";
+    }
+
+    private void Continue()
+    {
+        if (!IsPaused) return;
+        IsPaused = false;
+        IsRunning = true;
+        LastAction = "Continue";
+    }
+
+    private void Simulate()
+    {
+        // Dummy: einfache Simulation (kannst du durch echte Logik ersetzen)
+        GoalsA += 1;
+        LastAction = "Simulieren: +1 Tor Team A";
+    }
+
+    private void SetTimeTo5s()
+    {
+        ClockSeconds = 5;
+        LastAction = "Zeit auf 5s gesetzt";
+    }
+
+    private void ApplyResult()
+    {
+        GoalsA = Math.Max(0, SetResultA);
+        GoalsB = Math.Max(0, SetResultB);
+        LastAction = $"Ergebnis übernommen: {GoalsA}:{GoalsB}";
+    }
+}
