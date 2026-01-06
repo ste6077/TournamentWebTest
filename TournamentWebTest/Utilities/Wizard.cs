@@ -26,6 +26,9 @@ namespace TournamentWebTest.Utilities
 
             var teams = TeamService.Teams;
 
+            if (teams == null || !teams.Any())
+                return null;
+
             config.Teams.AddRange(GetArenaCup2026Teams(teams));
             config.NonCompetitiveTeams.Add(teams.Find(t => t.Id == TeamEnum.TSV_Ilshofen.GetDescription()));
             var tmpTeams = new TeamList(config.Teams);
@@ -79,6 +82,9 @@ namespace TournamentWebTest.Utilities
             config.Name = $"Hartmut Layer Cup 2026";
 
             var teams = TeamService.Teams;
+
+            if (teams == null || !teams.Any())
+                return null;
 
             config.Teams.AddRange(GetHartmutLayerCup2026Teams(teams));
             var tmpTeams = new TeamList(config.Teams);

@@ -8,6 +8,9 @@
 @using TournamentLibrary.Matches;
 @using TournamentLibrary.Teams;
 @using TournamentLibrary.Groups;
+@using TournamentLibrary;
+@using Utilities;
+@implements IDisposable
 @inject SimulationService Service
 
 <details open class="mb-3">
@@ -17,7 +20,6 @@
             (zum Ein- / Ausklappen)
         </span>
     </summary>
-
     <button class="btn btn-primary" @onclick="SaveTournament">Turnier speichern</button>
     <InputFile OnChange="LoadTournament" accept="application/json" />
 
@@ -28,10 +30,13 @@
         @foreach (var round in AvailableModes)
         {
             <option value="@round">
-                @Utilities.Extensions.GetDescription(round)
+                @round
             </option>
         }
     </select>
+    <button class="btn btn-primary" @onclick="@(() => CreateTournament())">Turnier erstellen</button>
+    <span class="fw-bold">Status Turnier:</span>
+    <span class="form-label mb-1" style="width: 90px;">@TournamentStatus</span>
 </details>
 
 <details open class="mb-3">
@@ -42,20 +47,186 @@
         </span>
     </summary>
 
-    <MatchControl>
-
-    </MatchControl>
+    <MatchControl @ref="_matchControl"
+                  CurrentMatch="@Service.Tournament?.CurrentMatch"
+                  OnNextMatch="@(() => { SetNextMatchHandler(); return Task.CompletedTask; })"
+                  OnStart="@(() => { Service.StartMatch(); RefreshLists(); return Task.CompletedTask; })"
+                  OnPause="@(() => { Service.PauseMatch(); return Task.CompletedTask; })"
+                  OnContinue="@(() => { Service.ContinueMatch(); return Task.CompletedTask; })"
+                  OnStop="@(() => { Service.StopMatch(); return Task.CompletedTask; })"
+                  OnAddGoalTeamA="@(() => { Service.AddGoal(true); RefreshLists(); return Task.CompletedTask; })"
+                  OnRemoveGoalTeamA="@(() => { Service.RemoveGoal(true); RefreshLists(); return Task.CompletedTask; })"
+                  OnAddGoalTeamB="@(() => { Service.AddGoal(false); RefreshLists(); return Task.CompletedTask; })"
+                  OnRemoveGoalTeamB="@(() => { Service.RemoveGoal(false); RefreshLists(); return Task.CompletedTask; })"
+                  OnSimulate="@(() => { Service.RemoveGoal(false); RefreshLists(); return Task.CompletedTask; })"
+                  OnSetTimeTo5s="@(() => { return Task.CompletedTask;})"/>
 </details>
+
+@* Turnierdetails *@
+<div class="details-grid">
+    <details open class="mb-3">
+        <summary class="fw-bold fs-5">Spielpläne</summary>
+        <details open class="mb-3">
+            <summary class="fw-bold fs-5">Gesamt</summary>
+            <ScheduleTable Matches="@ScheduleFull.MatchEntries"
+                           TeamColors="TeamColors"
+                           IsLocked="true"
+                           OnScoreChanged="(() => {return;})" />
+        </details>
+        <details open class="mb-3">
+            <summary class="fw-bold fs-5">Stage 1</summary>
+            <ScheduleTable Matches="@ScheduleStage1.MatchEntries"
+                           TeamColors="TeamColors"
+                           IsLocked="true"
+                           OnScoreChanged="(() => {return;})" />
+        </details>
+        <details open class="mb-3">
+            <summary class="fw-bold fs-5">Stage 2</summary>
+            <ScheduleTable Matches="@ScheduleStage2.MatchEntries"
+                           TeamColors="TeamColors"
+                           IsLocked="true"
+                           OnScoreChanged="(() => {return;})" />
+        </details>
+        <details open class="mb-3">
+            <summary class="fw-bold fs-5">Playoffs</summary>
+            <ScheduleTable Matches="@ScheduleStageFinals.MatchEntries"
+                           TeamColors="TeamColors"
+                           IsLocked="true"
+                           OnScoreChanged="(() => {return;})" />
+        </details>
+    </details>
+
+    <details open class="mb-3">
+        <summary class="fw-bold fs-5">Tabellen</summary>
+        <details open class="mb-3">
+            <summary class="fw-bold fs-5">Gruppen Stage 1</summary>
+            @foreach (var table in TablesStage1)
+            {
+                <GroupTable Title="@table.Name"
+                            Entries="@table.Entries"
+                            TeamColors="@TeamColors" />
+            }
+        </details>
+        <details open class="mb-3">
+            <summary class="fw-bold fs-5">Gruppen Stage 2</summary>
+            @foreach (var table in TablesStage2)
+            {
+                <GroupTable Title="@table.Name"
+                            Entries="@table.Entries"
+                            TeamColors="@TeamColors" />
+            }
+        </details>
+    </details>
+
+
+</div>
 
 
 @code {
 
-    private TournamentMode tournamentMode = TournamentMode.Bwk2026;
-    private static readonly TournamentLibrary.Types.TournamentMode[] AvailableModes =
+    private string TournamentStatus => Service.Tournament != null ? Service.Tournament.Name : "Kein Turnier geladen";
+    private MatchControl? _matchControl;
+    private Dictionary<Team, string> TeamColors = new Dictionary<Team, string>();
+    private TournamentMode tournamentMode = AvailableModes[0];
+    private static readonly TournamentMode[] AvailableModes =
     {
         TournamentMode.Bwk2026,
         TournamentMode.HartmutLayerCup2026,
     };
+
+    private List<WebGroup> TablesStage1 = new();
+    private List<WebGroup> TablesStage2 = new();
+    private WebSchedule ScheduleFull = new();
+    private WebSchedule ScheduleStage1 = new();
+    private WebSchedule ScheduleStage2 = new();
+    private WebSchedule ScheduleStageFinals = new();
+
+    protected override void OnInitialized()
+    {
+        Service.StateChanged += OnStateChanged;
+    }
+
+    private void OnStateChanged()
+    {
+        //RefreshLists();
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+        => Service.StateChanged -= OnStateChanged;
+
+    private void SetNextMatchHandler()
+    {
+        var match = Service.SetNextMatch();
+        // _matchControl?.SetMatch(match);
+    }
+
+    private void CreateTournament()
+    {
+        var tmp = Service.Tournament;
+        Service.CreateTournament(tournamentMode);
+        Console.WriteLine($"Turnier erstellen...");
+        if (Service.Tournament != null && tmp != Service.Tournament)
+        {
+            if (tmp != null)
+            {
+                tmp.MatchTimer_Tick -= MatchTimer_Tick;
+            }
+
+            Service.Tournament.MatchTimer_Tick += MatchTimer_Tick;
+
+            TeamColors.Clear();
+            for (int i = 0; i < Service.Tournament.Teams.Count; i++)
+            {
+                TeamColors.Add(Service.Tournament.Teams[i], Utilities.Colors.TeamColors[i]);
+            }
+
+            TablesStage1.Clear();
+            foreach (var group in Service.Tournament.GroupStage1.Groups)
+            {
+                TablesStage1.Add(new WebGroup(group));
+            }
+
+            TablesStage2.Clear();
+            foreach (var group in Service.Tournament.GroupStage2.Groups)
+            {
+                TablesStage2.Add(new WebGroup(group));
+            }
+            RefreshLists();
+            Console.WriteLine($"Turnier erstellt...");
+        }
+    }
+
+    /// <summary>
+    /// Alle Listen updaten
+    /// </summary>
+    private void RefreshLists()
+    {
+        Service.Tournament.GetScheduledMatches().RefreshScheduleList(ScheduleFull.MatchEntries);
+        Service.Tournament.GroupStage1.Fixtures.RefreshScheduleList(ScheduleStage1.MatchEntries);
+        Service.Tournament.GroupStage2.Fixtures.RefreshScheduleList(ScheduleStage2.MatchEntries);
+        Service.Tournament.FinalStage.GetFixtures().RefreshScheduleList(ScheduleStageFinals.MatchEntries);
+
+        foreach (var item in TablesStage1)
+        {
+            item.Refresh();
+        }
+        foreach (var item in TablesStage2)
+        {
+            item.Refresh();
+        }
+    }
+
+    private void SetTournament(Tournament tour)
+    {
+        
+    }
+
+    private void MatchTimer_Tick(object sender, TimeSpan e)
+    {
+        //Console.WriteLine($"Timestamp updated: {e}");
+        _matchControl?.SetTimestamp(e);
+    }
 
     private void LoadTournament(InputFileChangeEventArgs e)
     {

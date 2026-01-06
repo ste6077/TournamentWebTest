@@ -29,6 +29,9 @@ namespace TournamentWebTest.Services
 
             Tournament = Utilities.Wizard.GetHartmutLayer2026();
 
+            if (Tournament == null)
+                return;
+
             foreach (var g in Tournament.GroupStage1.Groups)
             {
                 Console.WriteLine($"Stage1: {g.Name}");

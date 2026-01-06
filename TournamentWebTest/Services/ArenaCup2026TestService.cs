@@ -38,6 +38,9 @@ namespace TournamentWebTest.Services
 
             Tournament = Utilities.Wizard.GetBwk2026Tournament();
 
+            if (Tournament == null)
+                return;
+
             foreach (var g in Tournament.GroupStage1.Groups)
             {
                 Console.WriteLine($"Stage1: {g.Name}");

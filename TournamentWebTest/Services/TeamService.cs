@@ -41,10 +41,13 @@ namespace TournamentWebTest.Services
                     try
                     {
                         var json = await _http.GetStringAsync($"Data/Teams/{file}");
-                        var team = TournamentLibrary.Utilities.JsonConverter
-                            .Deserialize<TournamentLibrary.Teams.File>(json)
-                            .GetTeam(file);
+                        var teamFile = TournamentLibrary.Utilities.JsonConverter.Deserialize<TournamentLibrary.Teams.File>(json);
 
+                        Console.WriteLine($"File Base64: {teamFile.Base64LogoBig.Length}");
+
+                        var team = teamFile.GetTeam(file);
+                        team.Base64LogoBig = teamFile.Base64LogoBig;
+                        Console.WriteLine($"Team Base64: {team.Base64LogoBig.Length}");
                         if (team != null) tmpTeams.Add(team);
                     }
                     catch (Exception ex)
