@@ -19,7 +19,7 @@ namespace TournamentWebTest.Model
         {
             if (matchEntries != null)
             {
-                matchEntries.RefreshScheduleList(MatchEntries);
+                matchEntries.RefreshScheduleList(MatchEntries, false);
             }
         }
     }

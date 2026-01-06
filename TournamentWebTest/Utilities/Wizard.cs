@@ -80,7 +80,7 @@ namespace TournamentWebTest.Utilities
         {
             var config = TournamentLibrary.Modes.HartmutLayerCup2026.GetDefaultConfiguration();
             config.Name = $"Hartmut Layer Cup 2026";
-
+            
             var teams = TeamService.Teams;
 
             if (teams == null || !teams.Any())

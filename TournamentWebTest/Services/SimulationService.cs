@@ -2,6 +2,7 @@
 using TournamentLibrary.Matches;
 using TournamentWebTest.Utilities;
 using TournamentLibrary.Types;
+using TournamentLibrary.Utilities;
 
 namespace TournamentWebTest.Services
 {
@@ -60,13 +61,35 @@ namespace TournamentWebTest.Services
             if (tmp == null)
                 return false;
 
+            return SetNewTournament(tmp);
+            //if (Tournament != null)
+            //{
+            //    Tournament.MatchTimer_Tick -= Tournament_MatchTimer_Tick;
+            //    Tournament.CurrentMatch_StateChanged -= Tournament_CurrentMatch_StateChanged;
+            //}
+
+            //Tournament = tmp;
+            //Tournament.Start();
+            //Tournament.MatchTimer_Tick += Tournament_MatchTimer_Tick;
+            //Tournament.CurrentMatch_StateChanged += Tournament_CurrentMatch_StateChanged;
+            //SetNextMatch();
+            //return true;
+        }
+
+        public bool SetNewTournament(Tournament created)
+        {
+            Console.WriteLine($"Set new Tournament file check = {created != null}");
+            if (created == null)
+                return false;
+
             if (Tournament != null)
             {
                 Tournament.MatchTimer_Tick -= Tournament_MatchTimer_Tick;
                 Tournament.CurrentMatch_StateChanged -= Tournament_CurrentMatch_StateChanged;
             }
-
-            Tournament = tmp;
+  
+            Tournament = created;
+            Tournament.GeneralSettings.Autosave = false;
             Tournament.Start();
             Tournament.MatchTimer_Tick += Tournament_MatchTimer_Tick;
             Tournament.CurrentMatch_StateChanged += Tournament_CurrentMatch_StateChanged;
@@ -156,6 +179,98 @@ namespace TournamentWebTest.Services
         public void ContinueMatch()
         {
             Tournament?.ContinueMatch();
+            Notify();
+        }
+
+        /// <summary>
+        /// Aktuelles Match simulieren
+        /// </summary>
+        public void SimulateCurrentMatch()
+        {
+            if (Tournament == null)
+                return;
+
+            Utilities.MatchSimulations.SimulateMatch(Tournament.CurrentMatch);
+            Notify();
+        }
+
+        /// <summary>
+        /// Stage 1 simulieren
+        /// </summary>
+        /// <param name="matches"></param>
+        public void SimulateStage1()
+        {
+            if (Tournament == null || Tournament.GroupStage2.HasStarted || Tournament.HavePlayoffsStarted)
+                return;
+
+            if (Tournament.GetShowMatches().Any())
+            {
+                Utilities.MatchSimulations.SimulateFixtures(Tournament.GetShowMatches());
+            }
+
+            Utilities.MatchSimulations.SimulateFixtures(Tournament.GroupStage1.Fixtures);
+            Notify();
+        }
+
+        /// <summary>
+        /// Stage 2 simulieren
+        /// </summary>
+        /// <param name="matches"></param>
+        public void SimulateStage2()
+        {
+            if (Tournament == null || !Tournament.GroupStage1.IsFinished || Tournament.HavePlayoffsStarted)
+                return;
+            Utilities.MatchSimulations.SimulateFixtures(Tournament.GroupStage2.Fixtures);
+            Notify();
+        }
+
+        /// <summary>
+        /// Playoffs simulieren
+        /// </summary>
+        /// <param name="matches"></param>
+        public void SimulatePlayoffs()
+        {
+            if (Tournament == null || 
+                (Tournament.Mode.HasGroupStage2() && !Tournament.GroupStage2.IsFinished) ||
+                (!Tournament.Mode.HasGroupStage2() && !Tournament.GroupStage1.IsFinished))
+                return;
+            Utilities.MatchSimulations.SimulateFixtures(Tournament.FinalStage.GetFixtures());
+            Notify();
+        }
+
+        /// <summary>
+        /// Matchzeit auf 5s setzen
+        /// </summary>
+        /// <param name="matches"></param>
+        public void SetMatchTo5s()
+        {
+            if (Tournament == null || Tournament.CurrentMatch == null || Tournament.CurrentMatch.IsFinished || Tournament.CurrentMatch.HasNotBeenStarted)
+            {
+                return;
+            }
+            Tournament.PauseMatch();
+            Tournament.EditRemainingTime(new TimeSpan(0, 0, 5));
+            Notify();
+        }
+
+        /// <summary>
+        /// Match Resultat setzen
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        public void SetResult(int a, int b)
+        {
+            if (Tournament == null || Tournament.CurrentMatch == null)
+            {
+                return;
+            }
+
+            if (Tournament.CurrentMatch.IsLive)
+            {
+                Tournament.PauseMatch();
+            }
+
+            Utilities.MatchSimulations.SetScoreAndFinish(Tournament.CurrentMatch, a, b);
             Notify();
         }
 

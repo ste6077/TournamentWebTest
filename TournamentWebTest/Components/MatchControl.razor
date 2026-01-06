@@ -161,7 +161,7 @@
 
                     <div class="col-12 col-md-4">
                         <button class="btn btn-dark w-100"
-                                @onclick="OnApplyResult">
+                                @onclick="OnApplyResultClicked">
                             Ergebnis übernehmen
                         </button>
                     </div>
@@ -174,8 +174,8 @@
 @code {
     // --- UI State / Binding ---
     private int ScheduleNumber => CurrentMatch != null ? CurrentMatch.ScheduleNumber : -1;
-    private int MatchNumber => CurrentMatch != null ? CurrentMatch.OverallMatchNumber : -1;
-    private string GroupText => CurrentMatch != null ? CurrentMatch.GroupInfoText : "tba";
+    private string MatchNumber => CurrentMatch != null ? CurrentMatch.FixtureNumberAsText : "tba";
+    private string GroupText => CurrentMatch != null ? CurrentMatch.GroupName : "tba";
 
     private string TeamAName => CurrentMatch != null ? CurrentMatch.NameTeamA : "Team A";
     private string TeamBName => CurrentMatch != null ? CurrentMatch.NameTeamB : "Team B";
@@ -221,8 +221,11 @@
     [Parameter] public EventCallback OnStop { get; set; }
 
     [Parameter] public EventCallback OnSimulate { get; set; }
+    [Parameter] public EventCallback OnSimulateStage1 { get; set; }
+    [Parameter] public EventCallback OnSimulateStage2 { get; set; }
+    [Parameter] public EventCallback OnSimulatePlayoffs { get; set; }
     [Parameter] public EventCallback OnSetTimeTo5s { get; set; }
-    [Parameter] public EventCallback OnApplyResult { get; set; }
+    [Parameter] public EventCallback<(int, int)> OnApplyResult { get; set; }
 
     private Task OnNextMatchClicked() => OnNextMatch.InvokeAsync();
     private Task OnAddGoalA() => OnAddGoalTeamA.InvokeAsync();
@@ -236,8 +239,11 @@
     private Task OnStopClicked() => OnStop.InvokeAsync();
 
     private Task OnSimulateClicked() => OnSimulate.InvokeAsync();
+    private Task OnSimulateStage1Clicked() => OnSimulateStage1.InvokeAsync();
+    private Task OnSimulateStage2Clicked() => OnSimulateStage2.InvokeAsync();
+    private Task OnSimulatePlayoffsClicked() => OnSimulatePlayoffs.InvokeAsync();
     private Task OnTimeTo5sClicked() => OnSetTimeTo5s.InvokeAsync();
-    private Task OnApplyResultClicked() => OnApplyResult.InvokeAsync();
+    private Task OnApplyResultClicked() => OnApplyResult.InvokeAsync((SetResultA, SetResultB));
 
     protected override void OnInitialized()
     {

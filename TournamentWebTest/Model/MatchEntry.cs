@@ -7,7 +7,7 @@ namespace TournamentWebTest.Model
 {
     public class MatchEntry : IMatchEntry
     {
-        public int GameNumber { get; set; }
+        public string GameNumber { get; set; }
         public string Group { get; set; } = "";
         public string NameTeamA { get; set; } = "";
         public string NameTeamB { get; set; } = "";
@@ -19,25 +19,36 @@ namespace TournamentWebTest.Model
         public Match? MatchLink { get; set; } = null;
 
         public int GoldenGoalRound { get; set; } = 0; 
-        public int GoldenGoalSecond { get; set; } = 1; 
+        public int GoldenGoalSecond { get; set; } = 1;
+
+        public bool IsFinished { get; set; } = false;
 
         public MatchEntry() { }
         public MatchEntry(TournamentLibrary.Matches.Match match)
         {
             try
             {
-                Group = match.GroupName;
-                TeamA = match.TeamA;
-                TeamB = match.TeamB;
-                NameTeamA = match.NameTeamA;
-                NameTeamB = match.NameTeamB;
                 MatchLink = match;
+                Refresh();
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Fehler beim MatchEntry Konstruktor -> {match.OverallMatchNumber}: {e.Message}");
             }
 
+        }
+
+        public void Refresh()
+        {
+            GameNumber = MatchLink.FixtureNumberAsText;
+            Group = MatchLink.GroupName;
+            ScoreA = (int)MatchLink.ScoreA;
+            ScoreB = (int)MatchLink.ScoreB;
+            TeamA = MatchLink.TeamA;
+            TeamB = MatchLink.TeamB;
+            NameTeamA = MatchLink.NameTeamA;
+            NameTeamB = MatchLink.NameTeamB;
+            IsFinished = MatchLink.IsFinished;
         }
     }
 }

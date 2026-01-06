@@ -420,13 +420,7 @@
         {
             try
             {
-                list.Add(new MatchEntry(match)
-                {
-                    Group = match.GroupInfoText,
-                    GameNumber = match.OverallMatchNumber,
-                    ScoreA = (int)match.ScoreA,
-                    ScoreB = (int)match.ScoreB
-                });
+                list.Add(new MatchEntry(match));
             }
             catch (Exception ex)
             {

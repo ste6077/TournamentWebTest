@@ -10,6 +10,7 @@
             <th>Name B</th>
             <th>Score A</th>
             <th>Score B</th>
+            <th>Beendet</th>
         </tr>
     </thead>
     <tbody>
@@ -41,6 +42,9 @@
                            value="@match.ScoreB"
                            disabled="@IsLocked"
                            @oninput="(e) => OnScoreChanged.InvokeAsync((e, match, false))" />
+                </td>
+                <td>
+                    <input class="form-check-input" type="checkbox" disabled="true" @bind="match.IsFinished" />
                 </td>
             </tr>
         }

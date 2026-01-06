@@ -4,7 +4,7 @@ namespace TournamentWebTest.Model
 {
     public class MatchEntryFileProperties : IMatchEntry
     {
-        public int GameNumber { get; set; }
+        public string GameNumber { get; set; }
         public int ScoreA { get; set; }
         public int ScoreB { get; set; }
         public string NameTeamA { get; set; } = "";

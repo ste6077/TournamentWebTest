@@ -25,6 +25,21 @@ namespace TournamentWebTest.Utilities
 
             return attribute == null ? value.ToString() : attribute.Description;
         }
+        
+        /// <summary>
+        /// Matches aktualisieren
+        /// </summary>
+        /// <param name="matchEntries"></param>
+        public static void RefreshMatches(this List<MatchEntry> matchEntries)
+        {
+            if (matchEntries == null)
+                return;
+
+            foreach(var m in matchEntries)
+            {
+                m.Refresh();
+            }
+        }
 
         /// <summary>
         /// TableEntry Liste aktualisieren
@@ -56,10 +71,10 @@ namespace TournamentWebTest.Utilities
         /// </summary>
         /// <param name="matches"></param>
         /// <param name="entries"></param>
-        public static void RefreshScheduleList(this List<Match> matches, List<MatchEntry> entries)
+        public static void RefreshScheduleList(this List<Match> matches, List<MatchEntry> entries, bool setToFinished)
         {
             entries.Clear();
-            entries.AddRange(InitializeSchedule(matches));
+            entries.AddRange(InitializeSchedule(matches, setToFinished));
         }
 
         /// <summary>
@@ -67,18 +82,19 @@ namespace TournamentWebTest.Utilities
         /// </summary>
         /// <param name="matches"></param>
         /// <param name="entries"></param>
-        public static void RefreshScheduleList(this Fixture matches, List<MatchEntry> entries)
+        public static void RefreshScheduleList(this Fixture matches, List<MatchEntry> entries, bool setToFinished)
         {
             entries.Clear();
-            entries.AddRange(InitializeSchedule(matches));
+            entries.AddRange(InitializeSchedule(matches, setToFinished));
         }
 
         /// <summary>
         /// Spielplan initialisieren
         /// </summary>
         /// <param name="matches"></param>
+        /// <param name="setToFinished"></param>
         /// <returns></returns>
-        private static List<MatchEntry> InitializeSchedule(List<Match> matches)
+        private static List<MatchEntry> InitializeSchedule(List<Match> matches, bool setToFinished)
         {
             if (matches == null || !matches.Any())
             {
@@ -90,10 +106,14 @@ namespace TournamentWebTest.Utilities
             {
                 var list = GetMatchEntries(matches);
 
-                foreach (var match in matches)
+                if (setToFinished)
                 {
-                    match.State = match.HasGroup && match.Group.HasGroupStage && match.Group.GroupStage.Round == RoundType.GroupStage1 ? State.Finished : match.State;
+                    foreach (var match in matches)
+                    {
+                        match.State = match.HasGroup && match.Group.HasGroupStage && match.Group.GroupStage.Round == RoundType.GroupStage1 ? State.Finished : match.State;
+                    }
                 }
+
                 return list;
             }
             catch (Exception ex)
@@ -118,13 +138,7 @@ namespace TournamentWebTest.Utilities
             {
                 try
                 {
-                    list.Add(new MatchEntry(match)
-                    {
-                        Group = match.GroupInfoText,
-                        GameNumber = match.OverallMatchNumber,
-                        ScoreA = (int)match.ScoreA,
-                        ScoreB = (int)match.ScoreB
-                    });
+                    list.Add(new MatchEntry(match));
                 }
                 catch (Exception ex)
                 {

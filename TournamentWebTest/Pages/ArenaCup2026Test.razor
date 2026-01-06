@@ -313,32 +313,36 @@
         var file = e.File;
         if (file is null) return;
 
-        var matches = await Backup.LoadAsync<List<MatchEntryFileProperties>>(file);
-        if (matches is null) return;
-
-        var tmp = new List<MatchEntry>(ScheduleStage1);
-        tmp.AddRange(ScheduleStage2);
-        tmp.AddRange(ScheduleFinalStage);
-
-        foreach(var match in tmp)
+        try
         {
-            var matchData = matches.FirstOrDefault(m => m.GameNumber == match.GameNumber);
-            if (matchData != null)
+            var matches = await Backup.LoadAsync<List<MatchEntryFileProperties>>(file);
+            if (matches is null) return;
+
+            var tmp = new List<MatchEntry>(ScheduleStage1);
+            tmp.AddRange(ScheduleStage2);
+            tmp.AddRange(ScheduleFinalStage);
+
+            foreach (var match in tmp)
             {
-                match.ScoreA = matchData.ScoreA;
-                match.ScoreB = matchData.ScoreB;
-                ChangeMatchScore(match.MatchLink, match.ScoreA, match.ScoreB);
-
-                match.MatchLink.State = matchData.IsFinished ? State.Finished : State.NotStarted;
-
-                if (match.MatchLink.State == State.Finished)
+                var matchData = matches.FirstOrDefault(m => m.GameNumber == match.GameNumber);
+                if (matchData != null)
                 {
-                    TestService.Tournament.HandleMatchFinished(match.MatchLink);
+                    match.ScoreA = matchData.ScoreA;
+                    match.ScoreB = matchData.ScoreB;
+                    ChangeMatchScore(match.MatchLink, match.ScoreA, match.ScoreB);
+
+                    match.MatchLink.State = matchData.IsFinished ? State.Finished : State.NotStarted;
+
+                    if (match.MatchLink.State == State.Finished)
+                    {
+                        TestService.Tournament.HandleMatchFinished(match.MatchLink);
+                    }
                 }
             }
-        }
 
-        Refresh();
+            Refresh();
+        }
+        catch{}
     }
 
     protected override async Task OnInitializedAsync()
@@ -665,13 +669,7 @@
         {
             try
             {
-                list.Add(new MatchEntry(match)
-                {
-                    Group = match.GroupInfoText,
-                    GameNumber = match.OverallMatchNumber,
-                    ScoreA = (int)match.ScoreA,
-                    ScoreB = (int)match.ScoreB
-                });
+                list.Add(new MatchEntry(match));
             }
             catch (Exception ex)
             {

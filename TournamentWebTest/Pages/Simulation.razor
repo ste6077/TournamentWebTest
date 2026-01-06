@@ -10,6 +10,7 @@
 @using TournamentLibrary.Groups;
 @using TournamentLibrary;
 @using Utilities;
+@inject IBackupFileService Backup
 @implements IDisposable
 @inject SimulationService Service
 
@@ -20,6 +21,7 @@
             (zum Ein- / Ausklappen)
         </span>
     </summary>
+    <span class="fw-bold">Das Laden einer Datei kann ein paar Sekunden dauern!</span>
     <button class="btn btn-primary" @onclick="SaveTournament">Turnier speichern</button>
     <InputFile OnChange="LoadTournament" accept="application/json" />
 
@@ -49,7 +51,7 @@
 
     <MatchControl @ref="_matchControl"
                   CurrentMatch="@Service.Tournament?.CurrentMatch"
-                  OnNextMatch="@(() => { SetNextMatchHandler(); return Task.CompletedTask; })"
+                  OnNextMatch="@(() => { SetNextMatchHandler(); RefreshLists(); return Task.CompletedTask; })"
                   OnStart="@(() => { Service.StartMatch(); RefreshLists(); return Task.CompletedTask; })"
                   OnPause="@(() => { Service.PauseMatch(); return Task.CompletedTask; })"
                   OnContinue="@(() => { Service.ContinueMatch(); return Task.CompletedTask; })"
@@ -58,8 +60,20 @@
                   OnRemoveGoalTeamA="@(() => { Service.RemoveGoal(true); RefreshLists(); return Task.CompletedTask; })"
                   OnAddGoalTeamB="@(() => { Service.AddGoal(false); RefreshLists(); return Task.CompletedTask; })"
                   OnRemoveGoalTeamB="@(() => { Service.RemoveGoal(false); RefreshLists(); return Task.CompletedTask; })"
-                  OnSimulate="@(() => { Service.RemoveGoal(false); RefreshLists(); return Task.CompletedTask; })"
-                  OnSetTimeTo5s="@(() => { return Task.CompletedTask;})"/>
+                  OnSimulate="@(() => { Service.SimulateCurrentMatch(); RefreshLists(); return Task.CompletedTask; })"
+                  OnSimulateStage1="@(() => { Service.SimulateStage1(); RefreshLists(); return Task.CompletedTask; })"
+                  OnSimulateStage2="@(() => { Service.SimulateStage2(); RefreshLists(); return Task.CompletedTask; })"
+                  OnSimulatePlayoffs="@(() => { Service.SimulatePlayoffs(); RefreshLists(); return Task.CompletedTask; })"
+                  OnApplyResult="@(((int, int)item) => { Service.SetResult(item.Item1, item.Item2); RefreshLists(); return Task.CompletedTask; })"
+                  OnSetTimeTo5s="@(() => { Service.SetMatchTo5s(); RefreshLists(); return Task.CompletedTask;})" />
+    <button class="btn btn-outline-danger w-50"
+            @onclick="(() => { Service.SimulateStage1(); RefreshLists(); return Task.CompletedTask; })">
+        Stage 1 simulieren (nur wenn Stage 2 / Playoffs nicht gestartet)
+    </button>
+    <button class="btn btn-outline-danger w-50"
+            @onclick="(() => { Service.SimulateStage2(); RefreshLists(); return Task.CompletedTask; })">
+        Stage 2 simulieren (nur wenn Stage 1 beendet / Playoffs nicht gestartet)
+    </button>
 </details>
 
 @* Turnierdetails *@
@@ -116,6 +130,12 @@
                             TeamColors="@TeamColors" />
             }
         </details>
+        <details open class="mb-3">
+            <summary class="fw-bold fs-5">Abschlusstabelle</summary>
+            <FinalTable Title="Abschlusstabelle"
+                        Entries="@FinalTable"
+                        TeamColors="@TeamColors" />
+        </details>
     </details>
 
 
@@ -136,6 +156,7 @@
 
     private List<WebGroup> TablesStage1 = new();
     private List<WebGroup> TablesStage2 = new();
+    private List<FinalTableItem> FinalTable = new();
     private WebSchedule ScheduleFull = new();
     private WebSchedule ScheduleStage1 = new();
     private WebSchedule ScheduleStage2 = new();
@@ -166,14 +187,21 @@
         var tmp = Service.Tournament;
         Service.CreateTournament(tournamentMode);
         Console.WriteLine($"Turnier erstellen...");
+        InitTournament(Service.Tournament, tmp);
+    }
+
+    private void InitTournament(Tournament tournament, Tournament tmp)
+    {
         if (Service.Tournament != null && tmp != Service.Tournament)
         {
             if (tmp != null)
             {
                 tmp.MatchTimer_Tick -= MatchTimer_Tick;
+                tmp.CurrentMatch_StateChanged -= CurrentMatch_StateChanged;
             }
 
             Service.Tournament.MatchTimer_Tick += MatchTimer_Tick;
+            Service.Tournament.CurrentMatch_StateChanged += CurrentMatch_StateChanged;
 
             TeamColors.Clear();
             for (int i = 0; i < Service.Tournament.Teams.Count; i++)
@@ -192,9 +220,18 @@
             {
                 TablesStage2.Add(new WebGroup(group));
             }
+            Service.Tournament.GetScheduledMatches().RefreshScheduleList(ScheduleFull.MatchEntries, false);
+            Service.Tournament.GroupStage1.Fixtures.RefreshScheduleList(ScheduleStage1.MatchEntries, false);
+            Service.Tournament.GroupStage2.Fixtures.RefreshScheduleList(ScheduleStage2.MatchEntries, false);
+            Service.Tournament.FinalStage.GetFixtures().RefreshScheduleList(ScheduleStageFinals.MatchEntries, false);
             RefreshLists();
             Console.WriteLine($"Turnier erstellt...");
         }
+    }
+
+    private void CurrentMatch_StateChanged(object sender, TournamentLibrary.Matches.State state)
+    {
+        RefreshLists();
     }
 
     /// <summary>
@@ -202,10 +239,12 @@
     /// </summary>
     private void RefreshLists()
     {
-        Service.Tournament.GetScheduledMatches().RefreshScheduleList(ScheduleFull.MatchEntries);
-        Service.Tournament.GroupStage1.Fixtures.RefreshScheduleList(ScheduleStage1.MatchEntries);
-        Service.Tournament.GroupStage2.Fixtures.RefreshScheduleList(ScheduleStage2.MatchEntries);
-        Service.Tournament.FinalStage.GetFixtures().RefreshScheduleList(ScheduleStageFinals.MatchEntries);
+        Service.Tournament.ForceModeHandlerTournamentProgress();
+        ScheduleFull.MatchEntries.RefreshMatches();
+        ScheduleStage1.MatchEntries.RefreshMatches();
+        ScheduleStage2.MatchEntries.RefreshMatches();
+        ScheduleStageFinals.MatchEntries.RefreshMatches();
+
 
         foreach (var item in TablesStage1)
         {
@@ -215,11 +254,14 @@
         {
             item.Refresh();
         }
-    }
 
-    private void SetTournament(Tournament tour)
-    {
-        
+        var finalTable = Service.Tournament.GetFinalTable();
+        FinalTable.Clear();
+        Console.WriteLine($"FinalTable: {finalTable.Count}");
+        foreach(var item in finalTable)
+        {
+            FinalTable.Add(new FinalTableItem((int)item.Place, item.Team));
+        }
     }
 
     private void MatchTimer_Tick(object sender, TimeSpan e)
@@ -228,13 +270,41 @@
         _matchControl?.SetTimestamp(e);
     }
 
-    private void LoadTournament(InputFileChangeEventArgs e)
+    private async Task LoadTournament(InputFileChangeEventArgs e)
     {
-        
+        try
+        {
+            var file = e.File;
+            Console.WriteLine($"file = NULL ? {file == null}");
+            if (file is null) 
+                return;
+
+            var tourFile = await Backup.LoadAsync<TournamentFileComplete>(file);
+            Console.WriteLine($"tourFile = NULL ? {tourFile == null}");
+            Console.WriteLine($"tourFile.File = NULL ? {tourFile.File == null}");
+            Console.WriteLine($"tourFile.LinkedFiles = NULL ? {tourFile.LinkedFiles == null}");
+
+            var tournament = tourFile.GetTournament();
+            var tmp = Service.Tournament;
+            Console.WriteLine($"tournament = NULL ? {tournament == null}");
+            if (tourFile != null)
+                Service.SetNewTournament(tournament);
+
+            Console.WriteLine($"Service.Tournament = NULL ? {Service.Tournament == null}");
+            InitTournament(Service.Tournament, tmp);
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine($"Fehler beim Laden des Turniers: {ex.Message}");
+        }
     }
 
-    private void SaveTournament()
+    private async void SaveTournament()
     {
+        if (Service.Tournament == null)
+            return;
 
+        var file = new TournamentFileComplete(Service.Tournament);
+        await Backup.SaveAsync(file, $"{Service.Tournament.Name} {DateTime.Now:HH-mm-ss}.json");
     }
 }

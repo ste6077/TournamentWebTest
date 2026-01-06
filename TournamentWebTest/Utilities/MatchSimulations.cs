@@ -8,18 +8,37 @@ namespace TournamentWebTest.Utilities
     {
         private static Random _random = new Random();
 
+        /// <summary>
+        /// Spiele simulieren
+        /// </summary>
+        /// <param name="matches"></param>
         public static void SimulateFixtures(Fixture matches)
         {
+            if (matches == null) 
+                return;
 
+            foreach (var m in matches)
+            {
+                SimulateMatch(m);
+            }
         }
 
+        /// <summary>
+        /// Score setzen und match auf Finished setzen
+        /// </summary>
+        /// <param name="match"></param>
+        /// <param name="scoreA"></param>
+        /// <param name="scoreB"></param>
         public static void SetScoreAndFinish(Match match, int scoreA, int scoreB)
         {
             if (match == null)
             {
                 return;
             }
+            match.ClearGoals();
             SetScore(match, scoreA, scoreB);
+            match.State = TournamentLibrary.Matches.State.Finished;
+            match.TimestampEnded = DateTime.Now;
         }
 
         /// <summary>

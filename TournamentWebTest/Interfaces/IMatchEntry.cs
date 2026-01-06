@@ -4,7 +4,7 @@ namespace TournamentWebTest.Interfaces
 {
     public interface IMatchEntry
     {
-        public int GameNumber { get; set; }
+        public string GameNumber { get; set; }
         public int ScoreA { get; set; }
         public int ScoreB { get; set; }
         public string NameTeamA { get; set; }
