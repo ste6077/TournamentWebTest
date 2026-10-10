@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "TournamentWebTest",
   "resources": {
-    "hash": "sha256-q3PyjAYmrMwGAvnxuXnxFSBPutA2jQDiZpvtOQ0IvlE=",
+    "hash": "sha256-GtU5+EBYE3qwi99b75eg/LhQ5XR+7GnLe2WcyRXBzkU=",
     "fingerprinting": {
       "Microsoft.AspNetCore.Components.Web.ucelqp1csn.wasm": "Microsoft.AspNetCore.Components.Web.wasm",
       "Microsoft.AspNetCore.Components.WebAssembly.qtj70x72wv.wasm": "Microsoft.AspNetCore.Components.WebAssembly.wasm",
@@ -70,8 +70,8 @@
       "System.Xml.ReaderWriter.6q6fx315fy.wasm": "System.Xml.ReaderWriter.wasm",
       "System.Xml.XDocument.o7bc1mb82e.wasm": "System.Xml.XDocument.wasm",
       "System.p0vf5aoex5.wasm": "System.wasm",
-      "TournamentLibrary.p0srcksulu.wasm": "TournamentLibrary.wasm",
-      "TournamentWebTest.ak4g4z97cj.wasm": "TournamentWebTest.wasm",
+      "TournamentLibrary.7dci8k103u.wasm": "TournamentLibrary.wasm",
+      "TournamentWebTest.ze7ofxdvs8.wasm": "TournamentWebTest.wasm",
       "dotnet.js": "dotnet.js",
       "dotnet.native.6sals8nuk0.js": "dotnet.native.js",
       "dotnet.native.zzmgzj9wb3.wasm": "dotnet.native.wasm",
@@ -164,8 +164,8 @@
       "System.Xml.ReaderWriter.6q6fx315fy.wasm": "sha256-MjO6wIakz/rhOb01dRSBOyT9ALTdTWz6wlwExayZEQE=",
       "System.Xml.XDocument.o7bc1mb82e.wasm": "sha256-PNMRdDGQrL7ju8zspdE+Ts/daVj3mLnBlzTpizLO+sI=",
       "System.p0vf5aoex5.wasm": "sha256-Nyi0mcDiCrrs35AL7vjBFsnr50PVmlZc0YGTCXg0h18=",
-      "TournamentLibrary.p0srcksulu.wasm": "sha256-mWIqdn/LCLhhHT0Pl9/a0NoSki/y1+YgbdcUDt0MMLw=",
-      "TournamentWebTest.ak4g4z97cj.wasm": "sha256-GruZN9KA9PZgYm2uegwA+RwmkXZ+KKNs+tXrMU/FiwE="
+      "TournamentLibrary.7dci8k103u.wasm": "sha256-5Qjn8Jk60TCuXrQhyJaS1LPCLUQ4V/aN/u6lpIhlmwU=",
+      "TournamentWebTest.ze7ofxdvs8.wasm": "sha256-daH1rcbupeW60xvnCpPwlAKN6cdLmKUcUIr2mA3ohMM="
     }
   },
   "cacheBootResources": true,
