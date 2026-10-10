@@ -26,9 +26,10 @@ namespace TournamentWebTest.Services
         {
             if (mode == TournamentMode.Bwk2026)
                 CreateArenaCup2026();
-
-            if (mode == TournamentMode.HartmutLayerCup2026)
+            else if (mode == TournamentMode.HartmutLayerCup2026)
                 CreateHartmutLayerCup2026();
+            else if (mode == TournamentMode.AllianzCup2027)
+                CreateAllianzJuniorCup2027();
         }
 
         /// <summary>
@@ -50,6 +51,15 @@ namespace TournamentWebTest.Services
         }
 
         /// <summary>
+        /// Allianz Junior Cup erstellen
+        /// </summary>
+        public void CreateAllianzJuniorCup2027()
+        {
+            if (!CreateTournament(Wizard.GetAllianzCup2027))
+                return;
+        }
+
+        /// <summary>
         /// Turnier erstellen
         /// </summary>
         /// <param name="action"></param>
@@ -62,18 +72,6 @@ namespace TournamentWebTest.Services
                 return false;
 
             return SetNewTournament(tmp);
-            //if (Tournament != null)
-            //{
-            //    Tournament.MatchTimer_Tick -= Tournament_MatchTimer_Tick;
-            //    Tournament.CurrentMatch_StateChanged -= Tournament_CurrentMatch_StateChanged;
-            //}
-
-            //Tournament = tmp;
-            //Tournament.Start();
-            //Tournament.MatchTimer_Tick += Tournament_MatchTimer_Tick;
-            //Tournament.CurrentMatch_StateChanged += Tournament_CurrentMatch_StateChanged;
-            //SetNextMatch();
-            //return true;
         }
 
         public bool SetNewTournament(Tournament created)
@@ -303,6 +301,38 @@ namespace TournamentWebTest.Services
             else
                 Tournament?.RemoveLastGoalTeamB();
             Console.WriteLine("Goal removed");
+            Notify();
+        }
+
+        #endregion
+
+        #region Zeitstrafen
+
+        /// <summary>
+        /// Zeitstrafe hinzufügen
+        /// </summary>
+        /// <param name="a"></param>
+        public void AddTimePenalty(bool a)
+        {
+            if (a)
+                Tournament?.AddTimePenaltyTeamA();
+            else
+                Tournament?.AddTimePenaltyTeamB();
+            Console.WriteLine("Time Penalty added");
+            Notify();
+        }
+
+        /// <summary>
+        /// Zeitstrafe entfernen
+        /// </summary>
+        /// <param name="a"></param>
+        public void RemoveLastTimePenalty(bool a)
+        {
+            if (a)
+                Tournament?.RemoveTimePenaltyTeamA(Tournament?.CurrentMatch?.ActiveTimePenaltiesTeamA?.LastOrDefault(), true);
+            else
+                Tournament?.RemoveTimePenaltyTeamB(Tournament?.CurrentMatch?.ActiveTimePenaltiesTeamB?.LastOrDefault(), true);
+            Console.WriteLine("Time Penalty removed");
             Notify();
         }
 

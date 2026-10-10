@@ -60,6 +60,10 @@
                   OnRemoveGoalTeamA="@(() => { Service.RemoveGoal(true); RefreshLists(); return Task.CompletedTask; })"
                   OnAddGoalTeamB="@(() => { Service.AddGoal(false); RefreshLists(); return Task.CompletedTask; })"
                   OnRemoveGoalTeamB="@(() => { Service.RemoveGoal(false); RefreshLists(); return Task.CompletedTask; })"
+                  OnAddTimePenaltyTeamA="@(() => { Service.AddTimePenalty(a: true); RefreshLists(); return Task.CompletedTask; })"
+                  OnAddTimePenaltyTeamB="@(() => { Service.AddTimePenalty(a: false); RefreshLists(); return Task.CompletedTask; })"
+                  OnRemoveTimePenaltyTeamA="@(() => { Service.RemoveLastTimePenalty(a: true); RefreshLists(); return Task.CompletedTask; })"
+                  OnRemoveTimePenaltyTeamB="@(() => { Service.RemoveLastTimePenalty(a: false); RefreshLists(); return Task.CompletedTask; })"
                   OnSimulate="@(() => { Service.SimulateCurrentMatch(); RefreshLists(); return Task.CompletedTask; })"
                   OnSimulateStage1="@(() => { Service.SimulateStage1(); RefreshLists(); return Task.CompletedTask; })"
                   OnSimulateStage2="@(() => { Service.SimulateStage2(); RefreshLists(); return Task.CompletedTask; })"
@@ -152,6 +156,7 @@
     {
         TournamentMode.Bwk2026,
         TournamentMode.HartmutLayerCup2026,
+        TournamentMode.AllianzCup2027,
     };
 
     private List<WebGroup> TablesStage1 = new();

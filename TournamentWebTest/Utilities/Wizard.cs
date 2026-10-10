@@ -109,6 +109,41 @@ namespace TournamentWebTest.Utilities
 
         #endregion
 
+        #region Allianz 2027
+
+        public static Tournament GetAllianzCup2027()
+        {
+            var config = TournamentLibrary.Modes.AllianzCup2027.GetDefaultConfiguration();
+            config.Name = $"Allianz Junior Cup 2027";
+
+            var teams = TeamService.Teams;
+
+            if (teams == null || !teams.Any())
+                return null;
+
+            config.Teams.AddRange(GetAllianzJuniorCup2027Teams(teams));
+            var tmpTeams = new TeamList(config.Teams);
+
+            foreach (var group in config.GroupStage1.Groups)
+            {
+                group.Teams.Clear();
+                group.Teams.AddRange(tmpTeams.Take((int)config.GroupStage1.Settings.GroupSize).ToList());
+                int slotIndex = 0;
+                group.Teams.ForEach(t =>
+                {
+                    group.Settings.GroupSlots[slotIndex].Team = t;
+                    t.GroupSlotStage1 = group.Settings.GroupSlots[slotIndex];
+                    slotIndex++;
+                    tmpTeams.Remove(t);
+                });
+            }
+
+            var tournament = new Tournament(config);
+            return tournament;
+        }
+
+        #endregion
+
         #region Sonstiges
 
         public static List<Team> GetArenaCup2026Teams(List<Team> teams)
@@ -132,6 +167,26 @@ namespace TournamentWebTest.Utilities
         }
 
         public static List<Team> GetHartmutLayerCup2026Teams(List<Team> teams)
+        {
+            var searcher = new List<TeamEnum>()
+            {
+                TeamEnum._1_FC_Heidenheim, TeamEnum._1_FC_Kaiserslautern, TeamEnum.VfB_Stuttgart, TeamEnum._1_FC_Nuernberg,
+                TeamEnum.TSG_1899_Hoffenheim, TeamEnum.SV_Stuttgarter_Kickers, TeamEnum.FC_Basel, TeamEnum.TSV_Ilshofen,
+
+            };
+            var result = new List<Team>();
+            foreach (var teamEnum in searcher)
+            {
+                var team = teams.Find(t => t.Id == teamEnum.GetDescription());
+                if (team != null)
+                {
+                    result.Add(team);
+                }
+            }
+            return result;
+        }
+
+        public static List<Team> GetAllianzJuniorCup2027Teams(List<Team> teams)
         {
             var searcher = new List<TeamEnum>()
             {

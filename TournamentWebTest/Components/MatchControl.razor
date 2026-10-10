@@ -1,5 +1,7 @@
 ﻿@using TournamentLibrary.Goals
 @using TournamentLibrary.Matches
+@using TournamentLibrary.TimePenalties
+@using TournamentWebTest.Model
 
 @* MatchControl.razor *@
 <div class="container py-3">
@@ -51,6 +53,35 @@
                                 - Tor Team A
                             </button>
                         </div>
+
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-success w-50"
+                                    @onclick="OnAddTimePenaltyA">
+                                + Zeitstrafe
+                            </button>
+                            <button class="btn btn-outline-danger w-50"
+                                    @onclick="OnRemoveTimePenaltyA">
+                                - Zeitstrafe
+                            </button>
+                        </div>
+
+                        @if (TimePenaltiesTeamA.Any())
+                        {
+                            <div class="mt-3">
+                                <div class="small text-muted mb-2">Aktive Zeitstrafen</div>
+
+                                @foreach (var penalty in TimePenaltiesTeamA)
+                                {
+                                    <div class="d-flex justify-content-between align-items-center
+                                        border rounded px-3 py-2 mb-2">
+                                        <span class="small">Restzeit</span>
+                                        <span class="fw-bold font-monospace">
+                                            @penalty.Time
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        }
 
                     </div>
                 </div>
@@ -131,6 +162,35 @@
                             </button>
                         </div>
 
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-success w-50"
+                                    @onclick="OnAddTimePenaltyB">
+                                + Zeitstrafe
+                            </button>
+                            <button class="btn btn-outline-danger w-50"
+                                    @onclick="OnRemoveTimePenaltyB">
+                                - Zeitstrafe
+                            </button>
+                        </div>
+
+                        @if (TimePenaltiesTeamB.Any())
+                        {
+                            <div class="mt-3">
+                                <div class="small text-muted mb-2">Aktive Zeitstrafen</div>
+
+                                @foreach (var penalty in TimePenaltiesTeamB)
+                                {
+                                    <div class="d-flex justify-content-between align-items-center
+                                        border rounded px-3 py-2 mb-2">
+                                        <span class="small">Restzeit</span>
+                                        <span class="fw-bold font-monospace">
+                                            @penalty.Time
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        }
+
                     </div>
                 </div>
             </div>
@@ -183,6 +243,24 @@
     private int GoalsA => CurrentMatch != null ? (int)CurrentMatch.ScoreA : 0;
     private int GoalsB => CurrentMatch != null ? (int)CurrentMatch.ScoreB : 0;
 
+    private List<TimePenaltyEntry> TimePenaltiesTeamA => CurrentMatch != null && CurrentMatch.HasActiveTimePenaltiesTeamA ? GetTimePenaltyEntries(CurrentMatch.ActiveTimePenaltiesTeamA) : new List<TimePenaltyEntry>();
+    private List<TimePenaltyEntry> TimePenaltiesTeamB => CurrentMatch != null && CurrentMatch.HasActiveTimePenaltiesTeamB ? GetTimePenaltyEntries(CurrentMatch.ActiveTimePenaltiesTeamB) : new List<TimePenaltyEntry>();
+
+    private List<TimePenaltyEntry> GetTimePenaltyEntries(TimePenaltyList list)
+    {
+        var entries = new List<TimePenaltyEntry>();
+
+        if (list != null && list.Any())
+        {
+            foreach (var item in list)
+            {
+                entries.Add(new TimePenaltyEntry(item));
+            }
+        }
+
+        return entries;
+    }
+
     private TimeSpan Clock { get; set; } = TimeSpan.Zero;
 
     // Ergebnis setzen
@@ -215,6 +293,11 @@
     [Parameter] public EventCallback OnAddGoalTeamB { get; set; }
     [Parameter] public EventCallback OnRemoveGoalTeamB { get; set; }
 
+    [Parameter] public EventCallback OnAddTimePenaltyTeamA { get; set; }
+    [Parameter] public EventCallback OnRemoveTimePenaltyTeamA { get; set; }
+    [Parameter] public EventCallback OnAddTimePenaltyTeamB { get; set; }
+    [Parameter] public EventCallback OnRemoveTimePenaltyTeamB { get; set; }
+
     [Parameter] public EventCallback OnStart { get; set; }
     [Parameter] public EventCallback OnPause { get; set; }
     [Parameter] public EventCallback OnContinue { get; set; }
@@ -232,6 +315,11 @@
     private Task OnRemoveGoalA() => OnRemoveGoalTeamA.InvokeAsync();
     private Task OnAddGoalB() => OnAddGoalTeamB.InvokeAsync();
     private Task OnRemoveGoalB() => OnRemoveGoalTeamB.InvokeAsync();
+
+    private Task OnAddTimePenaltyA() => OnAddTimePenaltyTeamA.InvokeAsync();
+    private Task OnRemoveTimePenaltyA() => OnRemoveTimePenaltyTeamA.InvokeAsync();
+    private Task OnAddTimePenaltyB() => OnAddTimePenaltyTeamB.InvokeAsync();
+    private Task OnRemoveTimePenaltyB() => OnRemoveTimePenaltyTeamB.InvokeAsync();
 
     private Task OnStartClicked() => OnStart.InvokeAsync();
     private Task OnPauseClicked() => OnPause.InvokeAsync();
