@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "TournamentWebTest",
   "resources": {
-    "hash": "sha256-GtU5+EBYE3qwi99b75eg/LhQ5XR+7GnLe2WcyRXBzkU=",
+    "hash": "sha256-W0fw35cW42jZvTT/1yB42CPsN+UE3HzZr6w92vnynfA=",
     "fingerprinting": {
       "Microsoft.AspNetCore.Components.Web.ucelqp1csn.wasm": "Microsoft.AspNetCore.Components.Web.wasm",
       "Microsoft.AspNetCore.Components.WebAssembly.qtj70x72wv.wasm": "Microsoft.AspNetCore.Components.WebAssembly.wasm",
@@ -70,24 +70,24 @@
       "System.Xml.ReaderWriter.6q6fx315fy.wasm": "System.Xml.ReaderWriter.wasm",
       "System.Xml.XDocument.o7bc1mb82e.wasm": "System.Xml.XDocument.wasm",
       "System.p0vf5aoex5.wasm": "System.wasm",
-      "TournamentLibrary.7dci8k103u.wasm": "TournamentLibrary.wasm",
-      "TournamentWebTest.ze7ofxdvs8.wasm": "TournamentWebTest.wasm",
+      "TournamentLibrary.ivse0uukdx.wasm": "TournamentLibrary.wasm",
+      "TournamentWebTest.hzzd7lk2mz.wasm": "TournamentWebTest.wasm",
+      "dotnet.native.od38nwwtr9.js": "dotnet.native.js",
+      "dotnet.native.byuuh6r0uy.wasm": "dotnet.native.wasm",
       "dotnet.js": "dotnet.js",
-      "dotnet.native.6sals8nuk0.js": "dotnet.native.js",
-      "dotnet.native.zzmgzj9wb3.wasm": "dotnet.native.wasm",
       "dotnet.runtime.8ha609180a.js": "dotnet.runtime.js",
       "icudt_CJK.tjcz0u77k5.dat": "icudt_CJK.dat",
       "icudt_EFIGS.tptq2av103.dat": "icudt_EFIGS.dat",
       "icudt_no_CJK.lfu7j35m59.dat": "icudt_no_CJK.dat"
     },
     "jsModuleNative": {
-      "dotnet.native.6sals8nuk0.js": "sha256-KipEmnHVPv346PS6vLFDZJg+YeG/D3UYlHI9udpKOiQ="
+      "dotnet.native.od38nwwtr9.js": "sha256-5AUq2zHAbUSpocLKnWKr4jfZ/RaGW+0ceKPaMI6fSIs="
     },
     "jsModuleRuntime": {
       "dotnet.runtime.8ha609180a.js": "sha256-dLGiRHXW5dihGFbVNpFTz1UieVuaSP9FlFdtk0cxQFo="
     },
     "wasmNative": {
-      "dotnet.native.zzmgzj9wb3.wasm": "sha256-kWgios95+ALdV18qJt0zxX9zENxbF8ifBfdPhb9Vkqw="
+      "dotnet.native.byuuh6r0uy.wasm": "sha256-zc5JuA5cSJ6BGlF6TRjR2UKG7GpJQyX7qK5a+R6JyQo="
     },
     "icu": {
       "icudt_CJK.tjcz0u77k5.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
@@ -164,8 +164,8 @@
       "System.Xml.ReaderWriter.6q6fx315fy.wasm": "sha256-MjO6wIakz/rhOb01dRSBOyT9ALTdTWz6wlwExayZEQE=",
       "System.Xml.XDocument.o7bc1mb82e.wasm": "sha256-PNMRdDGQrL7ju8zspdE+Ts/daVj3mLnBlzTpizLO+sI=",
       "System.p0vf5aoex5.wasm": "sha256-Nyi0mcDiCrrs35AL7vjBFsnr50PVmlZc0YGTCXg0h18=",
-      "TournamentLibrary.7dci8k103u.wasm": "sha256-5Qjn8Jk60TCuXrQhyJaS1LPCLUQ4V/aN/u6lpIhlmwU=",
-      "TournamentWebTest.ze7ofxdvs8.wasm": "sha256-daH1rcbupeW60xvnCpPwlAKN6cdLmKUcUIr2mA3ohMM="
+      "TournamentLibrary.ivse0uukdx.wasm": "sha256-Ul4EIJU1nKbqtKT6o5PliCKSilTFUTe7mL3gHGHIIV0=",
+      "TournamentWebTest.hzzd7lk2mz.wasm": "sha256-k20XFB4HnnPdZUDNOjJPCuqZ0wyUWeTKYb5zLLJoKZQ="
     }
   },
   "cacheBootResources": true,
